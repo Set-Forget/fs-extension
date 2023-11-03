@@ -49,9 +49,9 @@ const createBaseManifest = async (): Promise<Manifest> => {
 
         return {
             manifest_version: 3,
-            name: pkg.longName ?? pkg.name ?? 'GIVE ME A NAME',
+            name: pkg.longName ?? pkg.name ?? 'Formula Studio',
             version: pkg.version,
-            description: pkg.description ?? 'GIVE ME A DESCRIPTION',
+            description: pkg.description ?? 'Formula Studio IDE',
             action: {
                 default_popup: './src/scripts/popup/popup.html'
             },
@@ -97,7 +97,7 @@ const getManifest = async (resources: string[]): Promise<Manifest> => {
             ...baseManifest,
             web_accessible_resources: [
                 {
-                    matches: ['https://*/*', 'http://*/*'],
+                    matches: ['https://*/*', 'https://docs.google.com/spreadsheets/d/*'],
                     resources
                 }
             ]
