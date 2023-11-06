@@ -26,7 +26,7 @@ const CustomPopup = ({ showPopup }) => {
             } bg-fswhite text-fsblack  shadow-lg rounded-lg transform transition-all duration-500 flex flex-col ${
                 showPopup ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
                 // TODO: FIX DARK MODE
-            } ${darkMode ? 'bg-[#0E100F] text-fswhite' : ''}`}
+            } ${darkMode ? 'bg-gray-900 text-fswhite' : ''}`}
         >
             <div className="flex-grow">
                 <h1 className="title text-xl font-bold text-center p-8">{`{formulastudio}`}</h1>
