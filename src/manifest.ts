@@ -97,7 +97,7 @@ const getManifest = async (resources: string[]): Promise<Manifest> => {
             ...baseManifest,
             web_accessible_resources: [
                 {
-                    matches: ['https://*/*', 'https://docs.google.com/spreadsheets/d/*'],
+                    matches: ['https://*/*'],
                     resources
                 }
             ]
