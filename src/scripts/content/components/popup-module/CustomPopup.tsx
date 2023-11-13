@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import InternalNavbar from './InternalNavbar'
+// import CodeMirrorEditor from '../editor-module/SheetsEditor'
 
 const CustomPopup = ({ showPopup }) => {
     const [isExpanded, setIsExpanded] = useState(false)
@@ -32,6 +33,7 @@ const CustomPopup = ({ showPopup }) => {
                 <h1 className="title text-xl font-bold text-center p-8">{`{formulastudio}`}</h1>
             </div>
 
+            {/* <CodeMirrorEditor/> */}
             {/* Bottom Navbar */}
             <InternalNavbar
                 darkMode={darkMode}
