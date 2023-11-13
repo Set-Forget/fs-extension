@@ -32,6 +32,13 @@ web-extension-boilerplate-23/
 ├── src/
 │   ├── scripts/
 │   │   └── content
+            └── components
+                └── editor-module
+                    └── SheetsEditor.tsx
+                └── popup-module
+                    └── CustomPopup.tsx
+                    └── FloatingBtn.tsx
+                    └── InternalNavbar.tsx
 │   │       └── App.tsx
 │   │       └── index.tsx
 │   │   └── onInstalled
