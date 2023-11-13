@@ -33,7 +33,7 @@ const CustomPopup = ({ showPopup }) => {
                 <h1 className="title text-xl font-bold text-center p-8">{`{formulastudio}`}</h1>
             </div>
 
-            <SheetsEditor/>
+            <SheetsEditor darkMode={darkMode}/>
 
             {/* Bottom Navbar */}
             <InternalNavbar
