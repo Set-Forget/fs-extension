@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import FloatingBtn from './components/popup-module/FloatingBtn'
-import '@/lib/codemirror-5.65.15/lib/codemirror.css'
+import '../../lib/codemirror-5.65.15/lib/codemirror.css'
 
 const App = () => {
     const [isOpen, setIsOpen] = useState(false)

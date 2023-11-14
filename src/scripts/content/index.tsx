@@ -2,6 +2,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import styles from '@/styles/index.css?inline'
 import App from './App'
+import codemirrorStyles from '../../lib/codemirror-5.65.15/lib/codemirror.css?inline';
 
 const isProduction: boolean = process.env.NODE_ENV === 'production'
 const ROOT_ID = 'RENAME_ME_IF_YOU_WANT'
@@ -31,7 +32,7 @@ const injectReact = (rootId: string): void => {
         root.render(
             <React.StrictMode>
                 <>
-                    {isProduction && <style>{styles.toString()}</style>}
+                    {isProduction && <style>{styles.toString() + codemirrorStyles.toString()}</style>}
                     <App />
                 </>
             </React.StrictMode>
