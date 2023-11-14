@@ -24,14 +24,14 @@ const CustomPopup = ({ showPopup }) => {
 // bg-[#141414]
     return (
         <div
-            className={`fixed bottom-36 right-16 ${
-                isExpanded ? 'w-[800px] h-[1000px]' : 'w-[600px] h-[900px]'
-            } bg-fswhite text-fsblack  shadow-lg rounded-lg transform transition-all duration-500 flex flex-col ${
+            className={`!z-50 fixed 2xl:bottom-36 2xl:right-16 bottom-24 right-6 ${
+                isExpanded ? 'w-[35vw] h-[85vh]' : 'w-[25vw] h-[65vh]'
+            } bg-white text-fsblack  shadow-lg rounded-lg transform transition-all duration-500 flex flex-col ${
                 showPopup ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-            } ${darkMode ? 'bg-black text-fswhite' : ''}`}
+            } ${darkMode ? '!bg-[#141414] !text-fswhite' : ''}`}
         >
             <div className="flex-grow">
-                <h1 className="title text-xl font-bold text-center p-8">{`{formulastudio}`}</h1>
+                <h1 className="title text-xl font-bold text-center 2xl:p-8 p-1">{`{formulastudio}`}</h1>
             </div>
 
             {/* Pass the themeName prop to SheetsEditor */}

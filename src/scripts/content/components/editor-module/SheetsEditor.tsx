@@ -65,7 +65,7 @@ const SheetsEditor = ({ themeName }) => {
 
     return (
         <div className="w-full h-full">
-            <div ref={editorRef} className="w-full h-full p-8" />
+            <div ref={editorRef} className="w-full h-full 2xl:p-8 p-1" />
             {/* Apply the correct theme styles */}
             <style dangerouslySetInnerHTML={{ __html: getThemeStyles() }} />
         </div>
