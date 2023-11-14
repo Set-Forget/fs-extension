@@ -8,7 +8,7 @@ const FloatingBtn: React.FC = () => {
     const buttonText: string = showPopup ? 'Close Formula Studio' : 'Open Formula Studio';
 
     return (
-        <div className="fixed 2xl:bottom-16 2xl:right-16 bottom-6 right-6 flex items-center">
+        <div className="!z-[1000] fixed 2xl:bottom-16 2xl:right-16 bottom-6 right-6 flex items-center">
             <div
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
