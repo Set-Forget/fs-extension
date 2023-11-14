@@ -1,26 +1,3 @@
-# dougwithseismic/react-tailwind-chrome-extension-template 🔥
-
-So, you want to build modern web extensions with React & Tailwind? Step on in. This is the starting point for all my browser extensions, including Promptheus, which lets over 28,000 weekly users talk to ChatGPT with their voice.
-
-Why do we need another extension boilerplate? Because v3 manifest! At time of writing, nothing out there comes as simple as this to working - If I can help just one person launch their extension then this project is a complete success in my eyes.
-
-## 1. Setup
-
-First off, give this a star! It costs nothing, and it helps more developers get started with products, faster. Let's lift one another up here.
-
-### i. Project Setup
-
-Start by installing your dependencies as usual. We're using Vite to build and React and Tailwind for everything. If you're used to modern web development then you'll have no problem working with this project. I built this boilerplate to match as closely as possible to the experience I'd expect when building web apps with React.
-
-```bash
-npm install
-```
-
-### ii. Edit package.json
-
-Head over to `package.json` and edit your name, longName and description to match your project. These are used to generate `manifest.json`. For more control over the manifest output, you can edit `src/manifest.ts`
-
-## Project Overview
 
 ```bash
 web-extension-boilerplate-23/
@@ -86,11 +63,7 @@ You'll find everything you need to get building in `src/scripts/...` so here's a
 
 - `src/scripts/service-worker` - The background script. Check out the examples on how to pass messages back and forth between Content and Background script. It should consist mainly of helper functions and listeners for specific events. You can debug this by heading over to `chrome://extensions` and clicking the `inspect service worker` link, that will open up a new devtools env specifically for the background script.
 
-## Building, Bundling and Shipping 🚢
-
-**READ THIS NEXT SECTION CAREFULLY BECAUSE THERE ARE SOME TIPS THAT WILL SAVE YOU TIME WHILST DEVELOPING YOUR EXTENSION!
-
-To get your extension running on Chrome, you'll need to do a couple (easy) steps. Firstly, run the build command, which uses vite to build and output to the `dist` folder.
+## How to start up the extension
 
 ```bash
 npm run build
@@ -104,16 +77,6 @@ You'll also notice that we're watching for changes on the content script so that
 
 ### Protip: Quick Reloading Shortcut
 
-TL;DR - Head to `chrome://extensions/shortcuts` and set your shortcut to Refresh Extension. WITHOUT DOING THIS, SHORTCUTS WONT WORK :)
-
-Heading to `chrome://extensions` and hitting the reload button every time I wanted to make a simple change was a nonsustainable headache so I added a shortcut `Ctrl + Space` (defaults to Command + Space for Mac) that reloads the extension in the same way.
-
-If you want to edit / disable this (and it could be a good idea to do so for production ships) then comment out the `commands` section on `src/manifest.ts`, or remove the `Chrome.commands` mentions from `src/scripts/service-worker/service-worker.ts` More here. [https://developer.chrome.com/docs/extensions/reference/commands/](https://developer.chrome.com/docs/extensions/reference/commands/)
+TL;DR - Head to `chrome://extensions/shortcuts` and set your shortcut to Refresh Extension (I set mine to ctrl + spacebar)
 
 Using `npm run build` with the watcher, and the Quick Reload Shortcut, you can get pretty close to a seamless hot-reloading experience, though its not perfect. Any ideas to make this more fluid are welcome!
-
-## Need help?
-
-Follow me on [twitter.com/dougiesilkstone](https://twitter.com/dougiesilkstone) and drop me a message, and please do submit a PR to help improve! I'll be running a week long hackathon to build and launch an extension project from start to finish, so if you're interested in joining, follow for more info.
-
-I'm here to help. It's what I enjoy the most (aside from shipping products, obviously). Reach out, always.
