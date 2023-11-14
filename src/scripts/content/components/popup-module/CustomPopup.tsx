@@ -7,7 +7,7 @@ const CustomPopup = ({ showPopup }) => {
     const [darkMode, setDarkMode] = useState(false)
 
     // Determine the theme name based on darkMode
-    const themeName = darkMode ? 'monokai' : 'duotone-light';
+    const themeName = darkMode ? 'monokai' : 'paraiso-light';
 
     useEffect(() => {
         // Update the body class

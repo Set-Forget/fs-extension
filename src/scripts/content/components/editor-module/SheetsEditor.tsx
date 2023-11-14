@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import SpreadsheetHint from './SpreadsheetsHint'
 import '@/lib/codemirror-5.65.15/lib/codemirror.js'
 import '@/lib/codemirror-5.65.15/mode/spreadsheet/spreadsheet.js'
 
@@ -11,7 +12,8 @@ import showHintStyles from '../../../../lib/codemirror-5.65.15/addon/hint/show-h
 import '@/lib/codemirror-5.65.15/addon/edit/closebrackets.js'
 import '@/lib/codemirror-5.65.15/addon/edit/matchbrackets.js'
 import '@/lib/codemirror-5.65.15/addon/selection/active-line.js'
-import '@/lib/codemirror-5.65.15/addon/comment/comment.js'
+
+window.CodeMirror.registerHelper('hint', 'spreadsheet', SpreadsheetHint)
 
 const SheetsEditor = ({ themeName }) => {
     const editorRef = useRef(null)
@@ -20,6 +22,21 @@ const SheetsEditor = ({ themeName }) => {
     // Initialize CodeMirror instance
     useEffect(() => {
         if (window.CodeMirror && editorRef.current && !editorInstance.current) {
+            // Define a delayed autocomplete trigger function
+            const delayAutoComplete = (cm, change) => {
+                clearTimeout(cm.autoCompleteTimer)
+                if (change.origin !== 'setValue') {
+                    cm.autoCompleteTimer = setTimeout(() => {
+                        if (!cm.state.completionActive) {
+                            cm.showHint({
+                                completeSingle: false,
+                                hint: SpreadsheetHint
+                            })
+                        }
+                    }, 150) // adjust delay as needed
+                }
+            }
+
             editorInstance.current = window.CodeMirror(editorRef.current, {
                 lineNumbers: true,
                 mode: 'spreadsheet',
@@ -30,19 +47,25 @@ const SheetsEditor = ({ themeName }) => {
                 indentWithTabs: true,
                 indentUnit: 4,
                 tabSize: 4,
-                extraKeys: { 
-                    "Tab": "indentMore", 
-                    "Shift-Tab": "indentLess",
-                    "Ctrl-/": "toggleComment", // windows
-                    "Cmd-/": "toggleComment", // macOS
+                extraKeys: {
+                    Tab: 'indentMore',
+                    'Shift-Tab': 'indentLess',
                 },
+                hintOptions: {
+                    completeSingle: false
+                }
             })
-        }
 
-        // Cleanup function
-        return () => {
-            if (editorInstance.current && typeof editorInstance.current.toTextArea === 'function') {
-                editorInstance.current.toTextArea()
+            // Register the event handler
+            editorInstance.current.on('inputRead', delayAutoComplete)
+
+            // Cleanup function
+            return () => {
+                if (editorInstance.current) {
+                    clearTimeout(editorInstance.current.autoCompleteTimer)
+                    editorInstance.current.off('inputRead', delayAutoComplete)
+                    editorInstance.current.toTextArea()
+                }
             }
         }
     }, [])
