@@ -12,6 +12,7 @@ import showHintStyles from '../../../../lib/codemirror-5.65.15/addon/hint/show-h
 import '@/lib/codemirror-5.65.15/addon/edit/closebrackets.js'
 import '@/lib/codemirror-5.65.15/addon/edit/matchbrackets.js'
 import '@/lib/codemirror-5.65.15/addon/selection/active-line.js'
+import CopyButton from './CopyButton'
 
 window.CodeMirror.registerHelper('hint', 'spreadsheet', SpreadsheetHint)
 
@@ -33,7 +34,7 @@ const SheetsEditor = ({ themeName }) => {
                                 hint: SpreadsheetHint
                             })
                         }
-                    }, 150) 
+                    }, 150)
                 }
             }
 
@@ -53,8 +54,7 @@ const SheetsEditor = ({ themeName }) => {
                     'Ctrl-U': 'autocomplete'
                 },
                 hintOptions: {
-                    completeSingle: false,
-                    container: editorRef.current,
+                    completeSingle: false
                 }
             })
 
@@ -70,27 +70,46 @@ const SheetsEditor = ({ themeName }) => {
                 }
             }
         }
-    }, [editorRef])
+    }, [])
 
-    // Update theme dynamically
+    // update theme dynamically
     useEffect(() => {
         if (editorInstance.current) {
             editorInstance.current.setOption('theme', themeName)
         }
-    }, [themeName]) // This effect runs when themeName changes
+    }, [themeName])
 
-    // Determine which theme styles to apply
-    // Determine which theme styles to apply
+    // determine which theme styles to apply
     const getCombinedStyles = () => {
-        const combinedStyles = showHintStyles.toString() + (themeName === 'monokai' ? monokaiThemeStyles.toString() : paraisoLightStyles.toString());
-        console.log(combinedStyles);
-        return combinedStyles;
-    };
-    
+        const combinedStyles =
+            showHintStyles.toString() +
+            (themeName === 'monokai'
+                ? monokaiThemeStyles.toString()
+                : paraisoLightStyles.toString())
+        return combinedStyles
+    }
+
+    // copies content of editor to clipboard
+    const copyToClipboard = () => {
+        const content = editorInstance.current && editorInstance.current.getValue()
+        if (content) {
+            navigator.clipboard
+                .writeText(content)
+                .then(() => {
+                    console.log('Content copied to clipboard')
+                })
+                .catch(err => {
+                    console.error('Could not copy text: ', err)
+                })
+        }
+    }
+
     return (
         <div className="w-full h-full">
-            <div id='CodeMirrorContainer' ref={editorRef} className="w-full h-full 2xl:p-8 p-1 relative" />
-            {/* Apply the correct theme styles */}
+            <div ref={editorRef} className="w-full h-full 2xl:p-8 p-1 relative">
+                <CopyButton copy={copyToClipboard}/>
+            </div>
+
             <style dangerouslySetInnerHTML={{ __html: getCombinedStyles() }} />
         </div>
     )
