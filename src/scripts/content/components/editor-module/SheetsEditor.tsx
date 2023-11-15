@@ -53,7 +53,8 @@ const SheetsEditor = ({ themeName }) => {
                     'Ctrl-U': 'autocomplete'
                 },
                 hintOptions: {
-                    completeSingle: false
+                    completeSingle: false,
+                    container: editorRef.current,
                 }
             })
 
@@ -69,7 +70,7 @@ const SheetsEditor = ({ themeName }) => {
                 }
             }
         }
-    }, [])
+    }, [editorRef])
 
     // Update theme dynamically
     useEffect(() => {
@@ -88,7 +89,7 @@ const SheetsEditor = ({ themeName }) => {
     
     return (
         <div className="w-full h-full">
-            <div ref={editorRef} className="w-full h-full 2xl:p-8 p-1 relative" />
+            <div id='CodeMirrorContainer' ref={editorRef} className="w-full h-full 2xl:p-8 p-1 relative" />
             {/* Apply the correct theme styles */}
             <style dangerouslySetInnerHTML={{ __html: getCombinedStyles() }} />
         </div>
