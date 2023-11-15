@@ -8,10 +8,13 @@ const SpreadsheetHint = (editor) => {
     const end = cursor.ch;
     const currentWord = token.string.toUpperCase();
 
+    console.log("Current word: ", currentWord); 
+
     const list = spreadsheetFunctions.filter(function(item) {
-        // Check if the function starts with the currently typed word, case-insensitive
         return item.toUpperCase().startsWith(currentWord);
     });
+
+    console.log("Suggestions: ", list); 
 
     return {
         list: list.length ? list : [],
@@ -19,5 +22,6 @@ const SpreadsheetHint = (editor) => {
         to: window.CodeMirror.Pos(cursor.line, end)
     };
 };
+
 
 export default SpreadsheetHint;

@@ -33,7 +33,7 @@ const SheetsEditor = ({ themeName }) => {
                                 hint: SpreadsheetHint
                             })
                         }
-                    }, 150) // adjust delay as needed
+                    }, 150) 
                 }
             }
 
@@ -50,6 +50,7 @@ const SheetsEditor = ({ themeName }) => {
                 extraKeys: {
                     Tab: 'indentMore',
                     'Shift-Tab': 'indentLess',
+                    'Ctrl-U': 'autocomplete'
                 },
                 hintOptions: {
                     completeSingle: false
@@ -79,18 +80,17 @@ const SheetsEditor = ({ themeName }) => {
 
     // Determine which theme styles to apply
     // Determine which theme styles to apply
-    const getThemeStyles = () => {
-        const themeStyles =
-            themeName === 'monokai' ? monokaiThemeStyles.toString() : paraisoLightStyles.toString()
-        console.log(themeStyles)
-        return themeStyles
-    }
-
+    const getCombinedStyles = () => {
+        const combinedStyles = showHintStyles.toString() + (themeName === 'monokai' ? monokaiThemeStyles.toString() : paraisoLightStyles.toString());
+        console.log(combinedStyles);
+        return combinedStyles;
+    };
+    
     return (
         <div className="w-full h-full">
-            <div ref={editorRef} className="w-full h-full 2xl:p-8 p-1" />
+            <div ref={editorRef} className="w-full h-full 2xl:p-8 p-1 relative" />
             {/* Apply the correct theme styles */}
-            <style dangerouslySetInnerHTML={{ __html: getThemeStyles() }} />
+            <style dangerouslySetInnerHTML={{ __html: getCombinedStyles() }} />
         </div>
     )
 }

@@ -2,3 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+.CodeMirror-hints {
+    display: block !important;
+    visibility: visible !important;
+    z-index: 99999999999999999999999999 !important;
+}
