@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import SpreadsheetHint from './SpreadsheetsHint'
+import CopyButton from './CopyButton'
 import '@/lib/codemirror-5.65.15/lib/codemirror.js'
 import '@/lib/codemirror-5.65.15/mode/spreadsheet/spreadsheet.js'
 
@@ -12,7 +13,8 @@ import showHintStyles from '../../../../lib/codemirror-5.65.15/addon/hint/show-h
 import '@/lib/codemirror-5.65.15/addon/edit/closebrackets.js'
 import '@/lib/codemirror-5.65.15/addon/edit/matchbrackets.js'
 import '@/lib/codemirror-5.65.15/addon/selection/active-line.js'
-import CopyButton from './CopyButton'
+
+import '@/lib/openai/bundled_openai.js'
 
 window.CodeMirror.registerHelper('hint', 'spreadsheet', SpreadsheetHint)
 
