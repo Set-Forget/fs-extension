@@ -31,7 +31,8 @@ const SheetsEditor = ({ themeName }) => {
                         if (!cm.state.completionActive) {
                             cm.showHint({
                                 completeSingle: false,
-                                hint: SpreadsheetHint
+                                hint: SpreadsheetHint,
+                                container: editorRef.current,
                             })
                         }
                     }, 150)
