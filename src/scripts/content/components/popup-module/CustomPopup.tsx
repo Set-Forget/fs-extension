@@ -27,7 +27,7 @@ const CustomPopup = ({ showPopup }) => {
             className={`fixed 2xl:bottom-36 2xl:right-16 bottom-24 right-6 ${
                 isExpanded ? 'w-[35vw] h-[85vh]' : 'w-[25vw] h-[65vh]'
             } bg-white text-fsblack  shadow-lg rounded-lg transform transition-all duration-500 flex flex-col ${
-                showPopup ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+                showPopup ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
             } ${darkMode ? '!bg-[#141414] !text-fswhite' : ''}`}
         >
             <div className="flex-grow">
@@ -42,6 +42,7 @@ const CustomPopup = ({ showPopup }) => {
                 darkMode={darkMode}
                 toggleDarkMode={() => setDarkMode(prevMode => !prevMode)}
                 onExpandToggle={handleExpandToggle}
+                isExpanded={isExpanded}
             />
         </div>
     )
