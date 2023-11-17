@@ -8,13 +8,11 @@ const SpreadsheetHint = (editor) => {
     const end = cursor.ch;
     const currentWord = token.string.toUpperCase();
 
-    console.log("Current word: ", currentWord); 
-
     const list = spreadsheetFunctions.filter(function(item) {
         return item.toUpperCase().startsWith(currentWord);
     });
 
-    console.log("Suggestions: ", list); 
+    // console.log("Suggestions: ", list); 
 
     return {
         list: list.length ? list : [],

@@ -3,9 +3,13 @@
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
   font-family: monospace;
-  height: 90%;
+  height: 85%;
   color: black;
   direction: ltr;
+  overflow: auto;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  
 }
 
 /* PADDING */
@@ -30,6 +34,7 @@
   white-space: nowrap;
 }
 .CodeMirror-linenumbers {}
+
 .CodeMirror-linenumber {
   padding: 0 3px 0 5px;
   min-width: 20px;
