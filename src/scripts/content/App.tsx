@@ -20,7 +20,7 @@ const App = () => {
     return (
         <>
             {isOpen && (
-                <div className="z-[9999] fixed bottom-10 right-10 p-6 cursor-pointer opacity-">
+                <div className="z-[9999] fixed bottom-10 right-10 p-6 cursor-pointer opacity-95">
                     <FloatingBtn/>
                 </div>
             )}
