@@ -22,8 +22,28 @@ const SheetsEditor = ({ themeName }) => {
     const editorRef = useRef(null)
     const editorInstance = useRef(null)
     const [errorMessage, setErrorMessage] = useState('')
+    const [sheetData, setSheetData] = useState(null)
+    const sheetDataRef = useRef(null);
 
     const apiKey = import.meta.env.VITE_GPTKEY.toString()
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbxq_83LoMXidWZBJyFyBJpPyJYAMuTXQjEzZPBFP4qFDW4TqGvovI7IGnyLnEa41WjqEg/exec')
+                if (!response.ok) {
+                    throw new Error('No response')
+                }
+                const data = await response.json();
+                sheetDataRef.current = data;
+                setSheetData(data);
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        }
+        fetchData()
+
+    }, [])
 
     // Initialize CodeMirror instance
     useEffect(() => {
@@ -116,12 +136,20 @@ const SheetsEditor = ({ themeName }) => {
 
     // handle gpt prompt from editor
     const handleShiftEnter = async editor => {
-        console.log('prompt sent')
+        console.log('prompt sent');
 
-        const currentLine = editor.getCursor().line
-        const promptText = editor.getLine(currentLine)
+        const sheetData = sheetDataRef.current;
+        console.log('Current sheet data:', sheetData);
 
-        // TODO: remove write command text if needed before sending to gpt
+        const currentLine = editor.getCursor().line;
+        const promptText = editor.getLine(currentLine);
+        const promptContext = sheetData ? JSON.stringify(sheetData) : '';
+
+        // Construct the full prompt
+        const fullPrompt = `Please create a google sheet formula with the following characteristics: ${promptText}. Please keep in mind this 2d array that represents a spreadsheet (columns go from A to Z): ${promptContext}, and only answer back with the code of a formula, and no additional text.`;
+
+        // Log the full prompt to the console
+        console.log('Full prompt:', fullPrompt);
 
         const openai = new OpenAI({
             apiKey: apiKey,
@@ -132,14 +160,12 @@ const SheetsEditor = ({ themeName }) => {
                 messages: [
                     {
                         role: 'user',
-                        content:
-                            'Please create a google sheet formula with the following characteristics: ' +
-                            promptText +
-                            ".  Please only answer back with the code of a formula, and no additional text. This implementation of gpt is for a chrome extension, and if it detects that the response includes additional text that has nothing to do with a formula, the extension will break. If for a weird reason the formula cannot be created due to code limitations, respond 'Formula could not be created'."
+                        content: fullPrompt
                     }
+
                 ],
-                model: 'gpt-4-1106-preview',
-                temperature: 0.2
+                model: 'gpt-4-0613',
+                temperature: 0.1
             })
             const responseText = completion.choices[0].message.content.trim()
 
@@ -158,7 +184,7 @@ const SheetsEditor = ({ themeName }) => {
                 )
             }
 
-            const insertTextTypewriterStyle = (text, position, index = 0, delay = 30) => {
+            const insertTextTypewriterStyle = (text, position, index = 0, delay = 25) => {
                 if (index < text.length) {
                     editor.replaceRange(text[index], position)
                     let nextPosition = { ...position, ch: position.ch + 1 }
@@ -266,9 +292,8 @@ const SheetsEditor = ({ themeName }) => {
                         {errorMessage}
                     </p>
                 )}
-                <button onClick={() => prettify(editorInstance.current)}>Prettify</button>
             </div>
-
+            <button onClick={() => prettify(editorInstance.current)}>Prettify</button>
             <style dangerouslySetInnerHTML={{ __html: getCombinedStyles() }} />
         </div>
     )

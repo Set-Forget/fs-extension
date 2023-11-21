@@ -24,7 +24,7 @@ const CustomPopup = ({ showPopup }) => {
 // bg-[#141414]
     return (
         <div
-            className={`fixed 2xl:bottom-36 2xl:right-16 bottom-24 right-6 origin-right ${
+            className={`fixed 2xl:bottom-28 2xl:right-8 bottom-24 right-3 origin-right ${
                 isExpanded ? 'w-[35vw] h-[85vh]' : 'w-[25vw] h-[65vh]'
             } bg-white text-fsblack  shadow-lg rounded-lg transform transition-all duration-[400ms] flex flex-col ${
                 showPopup ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
