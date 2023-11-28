@@ -37,3 +37,12 @@
 ::-webkit-scrollbar-corner {
     background-color: transparent; 
 }
+
+.grow-on-load {
+    animation: grow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) 0.5s forwards;
+}
+
+@keyframes grow {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}

@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
     content: ['./src/**/*.html', './src/**/*.{js,ts,jsx,tsx}'],
-    safelist: [/^CodeMirror/], 
+    safelist: [/^CodeMirror/],
     darkMode: 'class',
     theme: {
         extend: {
@@ -66,7 +66,16 @@ export default {
                 },
                 backgroundClip: {
                     text: 'text'
-                }
+                },
+                keyframes: {
+                    grow: {
+                        '0%': { transform: 'scale(0)' },
+                        '100%': { transform: 'scale(1)' },
+                    },
+                },
+                animation: {
+                    grow: 'grow 1s cubic-bezier(0.25, 0.1, 0.25, 1) 1s forwards',
+                },
             }
         }
     },
