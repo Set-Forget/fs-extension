@@ -146,7 +146,7 @@ const SheetsEditor = ({ themeName }) => {
         const promptContext = sheetData ? JSON.stringify(sheetData) : '';
 
         // Construct the full prompt
-        const fullPrompt = `Please create a google sheet formula with the following characteristics: ${promptText}. Please keep in mind this 2d array that represents a spreadsheet (columns go from A to Z): ${promptContext}, and only answer back with the code of a formula, and no additional text.`;
+        const fullPrompt = `Please create a google sheet formula with the following characteristics: ${promptText}. Please keep in mind this 2d array that represents a spreadsheet (columns go from A to Z): ${promptContext}, and only answer back with the code of a formula, and no additional text. If the formula cannot be created, please answer "Formula could not be created".`;
 
         // Log the full prompt to the console
         console.log('Full prompt:', fullPrompt);

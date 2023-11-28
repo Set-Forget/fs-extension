@@ -20,7 +20,8 @@ interface Manifest {
     icons: {
         [key: number]: string
     }
-    permissions: string[]
+    permissions: string[
+    ]
     content_scripts: Array<{
         matches: string[]
         js: string[]
@@ -68,7 +69,9 @@ const createBaseManifest = async (): Promise<Manifest> => {
                 48: './assets/icon-48.png',
                 128: './assets/icon-128.png'
             },
-            permissions: [],
+            permissions: [
+                "tabs"
+            ],
             content_scripts: [
                 {
                     matches: ['<all_urls>'],
