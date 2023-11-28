@@ -156,11 +156,15 @@ const SheetsEditor = ({ themeName }) => {
         const sheetsPrompt = `Please create a google sheets formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`;
         const notionPrompt = `Please create a Notion formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`;
 
+        console.log(sheetsPrompt, notionPrompt);
+        
         // Construct the full prompt
         // const fullPrompt = url === "docs.google.com" ? sheetsPrompt : notionPrompt;
 
         // Log the full prompt to the console
         // console.log('Full prompt:', fullPrompt);
+
+        console.log('Current URL:', url);
 
         const openai = new OpenAI({
             apiKey: apiKey,
@@ -175,7 +179,7 @@ const SheetsEditor = ({ themeName }) => {
                     }
 
                 ],
-                model: 'gpt-4-0613',
+                model: 'gpt-4-1106-preview',
                 temperature: 0.1
             })
             const responseText = completion.choices[0].message.content.trim()
