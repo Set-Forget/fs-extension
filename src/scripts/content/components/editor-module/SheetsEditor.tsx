@@ -25,7 +25,18 @@ const SheetsEditor = ({ themeName }) => {
     const [sheetData, setSheetData] = useState(null)
     const sheetDataRef = useRef(null);
 
+    const [url, setUrl] = useState<string | null>(null);
+    const currentUrlRef = useRef<string | null>(null);
+
     const apiKey = import.meta.env.VITE_GPTKEY.toString()
+
+    useEffect(() => {
+        // Fetch URL and store in ref
+        const storedUrl = sessionStorage.getItem("currentUrl");
+        currentUrlRef.current = storedUrl;
+        setUrl(storedUrl);
+    }, []);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -136,20 +147,20 @@ const SheetsEditor = ({ themeName }) => {
 
     // handle gpt prompt from editor
     const handleShiftEnter = async editor => {
-        console.log('prompt sent');
-
+        const url = currentUrlRef.current;
         const sheetData = sheetDataRef.current;
-        console.log('Current sheet data:', sheetData);
-
         const currentLine = editor.getCursor().line;
         const promptText = editor.getLine(currentLine);
-        const promptContext = sheetData ? JSON.stringify(sheetData) : '';
+        // const promptContext = sheetData ? JSON.stringify(sheetData) : '';
+
+        const sheetsPrompt = `Please create a google sheets formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`;
+        const notionPrompt = `Please create a Notion formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`;
 
         // Construct the full prompt
-        const fullPrompt = `Please create a google sheet formula with the following characteristics: ${promptText}. Please keep in mind this 2d array that represents a spreadsheet (columns go from A to Z): ${promptContext}, and only answer back with the code of a formula, and no additional text. If the formula cannot be created, please answer "Formula could not be created".`;
+        // const fullPrompt = url === "docs.google.com" ? sheetsPrompt : notionPrompt;
 
         // Log the full prompt to the console
-        console.log('Full prompt:', fullPrompt);
+        // console.log('Full prompt:', fullPrompt);
 
         const openai = new OpenAI({
             apiKey: apiKey,
@@ -160,7 +171,7 @@ const SheetsEditor = ({ themeName }) => {
                 messages: [
                     {
                         role: 'user',
-                        content: fullPrompt
+                        content: url === "docs.google.com" ? sheetsPrompt : notionPrompt
                     }
 
                 ],
