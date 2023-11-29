@@ -23,43 +23,50 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
     const editorInstance = useRef(null)
     const [errorMessage, setErrorMessage] = useState('')
     const [sheetData, setSheetData] = useState(null)
-    const sheetDataRef = useRef(null);
+    const sheetDataRef = useRef(null)
 
-    const [url, setUrl] = useState<string | null>(null);
-    const currentUrlRef = useRef<string | null>(null);
+    const [url, setUrl] = useState<string | null>(null)
+    const currentUrlRef = useRef<string | null>(null)
 
     const apiKey = import.meta.env.VITE_GPTKEY.toString()
 
     useEffect(() => {
-        if (onPrettifyFunctionReady) {
-          onPrettifyFunctionReady(prettify);
+        // Make sure this function is only set once the editorInstance is initialized
+        if (editorInstance.current && onPrettifyFunctionReady) {
+            // Define a new function that calls prettify with the current CodeMirror instance
+            const handlePrettify = () => {
+                prettify(editorInstance.current)
+            }
+
+            // Pass this new function to the parent
+            onPrettifyFunctionReady(handlePrettify)
         }
-      }, [onPrettifyFunctionReady]);
+    }, [editorInstance.current, onPrettifyFunctionReady])
 
     useEffect(() => {
         // Fetch URL and store in ref
-        const storedUrl = sessionStorage.getItem("currentUrl");
-        currentUrlRef.current = storedUrl;
-        setUrl(storedUrl);
-    }, []);
-
+        const storedUrl = sessionStorage.getItem('currentUrl')
+        currentUrlRef.current = storedUrl
+        setUrl(storedUrl)
+    }, [])
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbxq_83LoMXidWZBJyFyBJpPyJYAMuTXQjEzZPBFP4qFDW4TqGvovI7IGnyLnEa41WjqEg/exec')
+                const response = await fetch(
+                    'https://script.google.com/macros/s/AKfycbxq_83LoMXidWZBJyFyBJpPyJYAMuTXQjEzZPBFP4qFDW4TqGvovI7IGnyLnEa41WjqEg/exec'
+                )
                 if (!response.ok) {
                     throw new Error('No response')
                 }
-                const data = await response.json();
-                sheetDataRef.current = data;
-                setSheetData(data);
+                const data = await response.json()
+                sheetDataRef.current = data
+                setSheetData(data)
             } catch (error) {
-                console.error('Fetch error:', error);
+                console.error('Fetch error:', error)
             }
         }
         fetchData()
-
     }, [])
 
     // Initialize CodeMirror instance
@@ -153,18 +160,18 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
 
     // handle gpt prompt from editor
     const handleShiftEnter = async editor => {
-        const url = currentUrlRef.current;
-        const sheetData = sheetDataRef.current;
-        const currentLine = editor.getCursor().line;
-        const promptText = editor.getLine(currentLine);
+        const url = currentUrlRef.current
+        const sheetData = sheetDataRef.current
+        const currentLine = editor.getCursor().line
+        const promptText = editor.getLine(currentLine)
         // const promptContext = sheetData ? JSON.stringify(sheetData) : '';
 
-        const sheetsPrompt = `Please create a google sheets formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`;
-        const notionPrompt = `Please create a Notion formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`;
+        const sheetsPrompt = `Please create a google sheets formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`
+        const notionPrompt = `Please create a Notion formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`
 
-        console.log(sheetsPrompt, notionPrompt);
+        console.log(sheetsPrompt, notionPrompt)
 
-        console.log('Current URL:', url);
+        console.log('Current URL:', url)
 
         const openai = new OpenAI({
             apiKey: apiKey,
@@ -175,9 +182,8 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
                 messages: [
                     {
                         role: 'user',
-                        content: url === "docs.google.com" ? sheetsPrompt : notionPrompt
+                        content: url === 'docs.google.com' ? sheetsPrompt : notionPrompt
                     }
-
                 ],
                 model: 'gpt-4-1106-preview',
                 temperature: 0.1
@@ -232,10 +238,13 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
 
     // formats code
     const prettify = cm => {
+        console.log('executing prettify with cm:', cm)
+
         if (cm) {
             const content = cm.getValue()
             const formatted = formatFunction(content)
             cm.setValue(formatted)
+            console.log('code formatted', content)
         }
     }
 
