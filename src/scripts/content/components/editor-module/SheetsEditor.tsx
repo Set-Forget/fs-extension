@@ -18,7 +18,7 @@ import { OpenAI } from '../../../../lib/openai/bundled_openai.js'
 
 window.CodeMirror.registerHelper('hint', 'spreadsheet', SpreadsheetHint)
 
-const SheetsEditor = ({ themeName }) => {
+const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
     const editorRef = useRef(null)
     const editorInstance = useRef(null)
     const [errorMessage, setErrorMessage] = useState('')
@@ -29,6 +29,12 @@ const SheetsEditor = ({ themeName }) => {
     const currentUrlRef = useRef<string | null>(null);
 
     const apiKey = import.meta.env.VITE_GPTKEY.toString()
+
+    useEffect(() => {
+        if (onPrettifyFunctionReady) {
+          onPrettifyFunctionReady(prettify);
+        }
+      }, [onPrettifyFunctionReady]);
 
     useEffect(() => {
         // Fetch URL and store in ref
