@@ -8,18 +8,23 @@ const InternalNavbar = ({ darkMode, toggleDarkMode, onExpandToggle, isExpanded }
     return (
         <div className="fixed inset-x-0 bottom-0 z-10 w-full h-12 flex justify-between items-center px-8">
             <div onMouseEnter={() => setShowInfoModal(true)} onMouseLeave={() => setShowInfoModal(false)}>
-                <svg className={`${darkMode ? 'fill-white' : 'fill-black'}`} xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm169.8-90.7c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L280 264.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V250.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H222.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" /></svg>
+                <svg className={`${darkMode ? 'fill-white' : 'fill-black'}`} xmlns="http://www.w3.org/2000/svg" height="1.2em" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm169.8-90.7c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L280 264.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V250.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H222.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" /></svg>
                 <InfoModal show={showInfoModal} dm={dm} />
             </div>
 
             <div className='space-x-8'>
+                
+                <button>
+                <svg xmlns="http://www.w3.org/2000/svg" height="1.2em" width="1.2em" className={`${darkMode ? 'fill-white' : 'fill-black'}`} viewBox="0 0 576 512"><path d="M234.7 42.7L197 56.8c-3 1.1-5 4-5 7.2s2 6.1 5 7.2l37.7 14.1L248.8 123c1.1 3 4 5 7.2 5s6.1-2 7.2-5l14.1-37.7L315 71.2c3-1.1 5-4 5-7.2s-2-6.1-5-7.2L277.3 42.7 263.2 5c-1.1-3-4-5-7.2-5s-6.1 2-7.2 5L234.7 42.7zM46.1 395.4c-18.7 18.7-18.7 49.1 0 67.9l34.6 34.6c18.7 18.7 49.1 18.7 67.9 0L529.9 116.5c18.7-18.7 18.7-49.1 0-67.9L495.3 14.1c-18.7-18.7-49.1-18.7-67.9 0L46.1 395.4zM484.6 82.6l-105 105-23.3-23.3 105-105 23.3 23.3zM7.5 117.2C3 118.9 0 123.2 0 128s3 9.1 7.5 10.8L64 160l21.2 56.5c1.7 4.5 6 7.5 10.8 7.5s9.1-3 10.8-7.5L128 160l56.5-21.2c4.5-1.7 7.5-6 7.5-10.8s-3-9.1-7.5-10.8L128 96 106.8 39.5C105.1 35 100.8 32 96 32s-9.1 3-10.8 7.5L64 96 7.5 117.2zm352 256c-4.5 1.7-7.5 6-7.5 10.8s3 9.1 7.5 10.8L416 416l21.2 56.5c1.7 4.5 6 7.5 10.8 7.5s9.1-3 10.8-7.5L480 416l56.5-21.2c4.5-1.7 7.5-6 7.5-10.8s-3-9.1-7.5-10.8L480 352l-21.2-56.5c-1.7-4.5-6-7.5-10.8-7.5s-9.1 3-10.8 7.5L416 352l-56.5 21.2z"/></svg>
+                </button>
+
                 <button onClick={toggleDarkMode}>{darkMode ? (<svg
                     aria-hidden="true"
                     focusable="false"
-                    height="1em"
+                    height="1.2em"
                     role="presentation"
                     viewBox="0 0 24 24"
-                    width="1em"
+                    width="1.2em"
 
                 >
                     <g fill="currentColor">
@@ -29,10 +34,10 @@ const InternalNavbar = ({ darkMode, toggleDarkMode, onExpandToggle, isExpanded }
                 </svg>) : (<svg
                     aria-hidden="true"
                     focusable="false"
-                    height="1em"
+                    height="1.2em"
                     role="presentation"
                     viewBox="0 0 24 24"
-                    width="1em"
+                    width="1.2em"
 
                 >
                     <path
@@ -43,11 +48,11 @@ const InternalNavbar = ({ darkMode, toggleDarkMode, onExpandToggle, isExpanded }
 
                 <button onClick={onExpandToggle}>
                     {!isExpanded ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" className={`${darkMode ? 'fill-white' : 'fill-black'}`}>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1.2em" viewBox="0 0 512 512" className={`${darkMode ? 'fill-white' : 'fill-black'}`}>
                             <path d="M344 0H488c13.3 0 24 10.7 24 24V168c0 9.7-5.8 18.5-14.8 22.2s-19.3 1.7-26.2-5.2l-39-39-87 87c-9.4 9.4-24.6 9.4-33.9 0l-32-32c-9.4-9.4-9.4-24.6 0-33.9l87-87L327 41c-6.9-6.9-8.9-17.2-5.2-26.2S334.3 0 344 0zM168 512H24c-13.3 0-24-10.7-24-24V344c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2l39 39 87-87c9.4-9.4 24.6-9.4 33.9 0l32 32c9.4 9.4 9.4 24.6 0 33.9l-87 87 39 39c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8z" />
                         </svg>
                     ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" className={`${darkMode ? 'fill-white' : 'fill-black'}`}>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1.2em" viewBox="0 0 512 512" className={`${darkMode ? 'fill-white' : 'fill-black'}`}>
                             <path d="M439 7c9.4-9.4 24.6-9.4 33.9 0l32 32c9.4 9.4 9.4 24.6 0 33.9l-87 87 39 39c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8H296c-13.3 0-24-10.7-24-24V72c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2l39 39L439 7zM72 272H216c13.3 0 24 10.7 24 24V440c0 9.7-5.8 18.5-14.8 22.2s-19.3 1.7-26.2-5.2l-39-39L73 505c-9.4 9.4-24.6 9.4-33.9 0L7 473c-9.4-9.4-9.4-24.6 0-33.9l87-87L55 313c-6.9-6.9-8.9-17.2-5.2-26.2s12.5-14.8 22.2-14.8z" />
                         </svg>
                     )}

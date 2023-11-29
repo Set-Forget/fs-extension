@@ -157,12 +157,6 @@ const SheetsEditor = ({ themeName }) => {
         const notionPrompt = `Please create a Notion formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`;
 
         console.log(sheetsPrompt, notionPrompt);
-        
-        // Construct the full prompt
-        // const fullPrompt = url === "docs.google.com" ? sheetsPrompt : notionPrompt;
-
-        // Log the full prompt to the console
-        // console.log('Full prompt:', fullPrompt);
 
         console.log('Current URL:', url);
 
@@ -308,7 +302,7 @@ const SheetsEditor = ({ themeName }) => {
                     </p>
                 )}
             </div>
-            <button onClick={() => prettify(editorInstance.current)}>Prettify</button>
+            {/* <button onClick={() => prettify(editorInstance.current)}>Prettify</button> */}
             <style dangerouslySetInnerHTML={{ __html: getCombinedStyles() }} />
         </div>
     )
