@@ -16,7 +16,7 @@
 }
 
 .cm-s-isotope div.CodeMirror-selected {
-    background: #eaeaea84 !important;
+    background: rgb(174, 174, 255) !important;
 }
 
 .cm-s-isotope .CodeMirror-gutters {
