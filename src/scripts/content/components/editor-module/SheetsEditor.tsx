@@ -164,7 +164,6 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         const sheetData = sheetDataRef.current
         const currentLine = editor.getCursor().line
         const promptText = editor.getLine(currentLine)
-        // const promptContext = sheetData ? JSON.stringify(sheetData) : '';
 
         const sheetsPrompt = `Please create a google sheets formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`
         const notionPrompt = `Please create a Notion formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`
@@ -238,14 +237,42 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
 
     // formats code
     const prettify = cm => {
+        const url = currentUrlRef.current
+        const content = cm.getValue()
+        const formatted = formatFunction(content)
         console.log('executing prettify with cm:', cm)
 
-        if (cm) {
-            const content = cm.getValue()
-            const formatted = formatFunction(content)
+        if (cm && url === "docs.google.com") {
             cm.setValue(formatted)
             console.log('code formatted', content)
+        } else {
+            cm.setValue(uglify)
+            console.log('uglyfied code for notion', content)
         }
+    }
+
+    const uglify= func => {
+        let uglifiedFunc = '';
+        let inString = false;
+    
+        for (let i = 0; i < func.length; i++) {
+            const char = func[i];
+    
+            // Handle string literals
+            if (char === '"' && (i === 0 || func[i - 1] !== '\\')) {
+                inString = !inString;
+            }
+    
+            if (!inString) {
+                if (char !== ' ' && char !== '\n' && char !== '\t') {
+                    uglifiedFunc += char;
+                }
+            } else {
+                uglifiedFunc += char;
+            }
+        }
+    
+        return uglifiedFunc;
     }
 
     const formatFunction = func => {
