@@ -36,7 +36,7 @@ const App = () => {
     return (
         <>
             {isOpen && (
-                <div className="z-[9999] fixed bottom-10 right-10 p-6 cursor-pointer opacity-95">
+                <div className="z-[9999] fixed bottom-10 right-10 p-6 cursor-pointer opacity-[98%]">
                     <FloatingBtn />
                 </div>
             )}
