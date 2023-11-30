@@ -8,7 +8,7 @@ const CustomPopup = ({ showPopup }) => {
     const [prettifyFunction, setPrettifyFunction] = useState(() => () => {})
 
     // Determine the theme name based on darkMode
-    const themeName = darkMode ? 'monokai' : 'paraiso-light'
+    const themeName = darkMode ? 'midnight' : 'isotope'
 
     useEffect(() => {
         // Update the body class

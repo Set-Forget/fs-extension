@@ -4,8 +4,8 @@ import CopyButton from './CopyButton'
 import '@/lib/codemirror-5.65.15/lib/codemirror.js'
 import '@/lib/codemirror-5.65.15/mode/spreadsheet/spreadsheet.js'
 
-import monokaiThemeStyles from '../../../../lib/codemirror-5.65.15/theme/monokai.css?inline'
-import paraisoLightStyles from '../../../../lib/codemirror-5.65.15/theme/paraiso-light.css?inline'
+import monokaiThemeStyles from '../../../../lib/codemirror-5.65.15/theme/midnight.css?inline'
+import paraisoLightStyles from '../../../../lib/codemirror-5.65.15/theme/isotope.css?inline'
 
 import '@/lib/codemirror-5.65.15/addon/hint/show-hint.js'
 import '@/lib/codemirror-5.65.15/addon/hint/anyword-hint.js'
@@ -137,7 +137,7 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
     const getCombinedStyles = () => {
         const combinedStyles =
             showHintStyles.toString() +
-            (themeName === 'monokai'
+            (themeName === 'midnight'
                 ? monokaiThemeStyles.toString()
                 : paraisoLightStyles.toString())
         return combinedStyles
