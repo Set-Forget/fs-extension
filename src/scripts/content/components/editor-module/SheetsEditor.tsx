@@ -15,6 +15,9 @@ import '@/lib/codemirror-5.65.15/addon/edit/matchbrackets.js'
 import '@/lib/codemirror-5.65.15/addon/selection/active-line.js'
 
 import { OpenAI } from '../../../../lib/openai/bundled_openai.js'
+import ContextMenu from './ContextMenu'
+import { copy, cut, paste } from './contextMenuFuncs'
+import { CopyIcon, PasteIcon, CutIcon, CloseIcon } from './contextMenuIcons'
 
 window.CodeMirror.registerHelper('hint', 'spreadsheet', SpreadsheetHint)
 
@@ -27,6 +30,15 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
 
     const [url, setUrl] = useState<string | null>(null)
     const currentUrlRef = useRef<string | null>(null)
+
+    const contextMenuRef = useRef(null)
+    const [contextMenu, setContextMenu] = useState({
+        position: {
+            x: 0,
+            y: 0
+        },
+        toggled: false
+    })
 
     const apiKey = import.meta.env.VITE_GPTKEY.toString()
 
@@ -242,7 +254,7 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         const formatted = formatFunction(content)
         console.log('executing prettify with cm:', cm)
 
-        if (cm && url === "docs.google.com") {
+        if (cm && url === 'docs.google.com') {
             cm.setValue(formatted)
             console.log('code formatted', content)
         } else {
@@ -251,28 +263,28 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         }
     }
 
-    const uglify= func => {
-        let uglifiedFunc = '';
-        let inString = false;
-    
+    const uglify = func => {
+        let uglifiedFunc = ''
+        let inString = false
+
         for (let i = 0; i < func.length; i++) {
-            const char = func[i];
-    
+            const char = func[i]
+
             // Handle string literals
             if (char === '"' && (i === 0 || func[i - 1] !== '\\')) {
-                inString = !inString;
+                inString = !inString
             }
-    
+
             if (!inString) {
                 if (char !== ' ' && char !== '\n' && char !== '\t') {
-                    uglifiedFunc += char;
+                    uglifiedFunc += char
                 }
             } else {
-                uglifiedFunc += char;
+                uglifiedFunc += char
             }
         }
-    
-        return uglifiedFunc;
+
+        return uglifiedFunc
     }
 
     const formatFunction = func => {
@@ -334,17 +346,98 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
             cm.execCommand('newlineAndIndent')
         }
     }
+
+    const handleContextMenu = e => {
+        e.preventDefault()
+
+        const editorRect = editorRef.current.getBoundingClientRect()
+        const menuWidth = contextMenuRef.current.offsetWidth
+        const menuHeight = contextMenuRef.current.offsetHeight
+
+        let x = e.clientX - editorRect.left
+        let y = e.clientY - editorRect.top
+
+        // Adjust if the menu goes off to the right
+        if (x + menuWidth > editorRect.width) {
+            x -= x + menuWidth - editorRect.width
+        }
+
+        // Adjust if the menu goes off to the bottom
+        if (y + menuHeight > editorRect.height) {
+            y -= y + menuHeight - editorRect.height
+        }
+
+        setContextMenu({
+            position: { x, y },
+            toggled: true
+        })
+    }
+
+    useEffect(() => {
+        const closeContextMenu = () => {
+            console.log('Window click detected, closing context menu')
+            setContextMenu(prevContextMenu => ({ ...prevContextMenu, toggled: false }))
+        }
+
+        window.addEventListener('click', closeContextMenu)
+        return () => window.removeEventListener('click', closeContextMenu)
+    }, [])
+
     return (
-        <div className="w-full h-full">
-            <div ref={editorRef} className="m max-w-[98%] h-full 2xl:p-2 p-1 relative">
+        <div className="w-full h-full relative" onContextMenu={handleContextMenu}>
+            <div ref={editorRef} className="m max-w-[98%] h-full 2xl:p-2 p-1 relative cursor-default">
                 <CopyButton copy={copyToClipboard} />
                 {errorMessage && (
                     <p className="text-center text-orange-600 animate-pulse mt-2 text-xs">
                         {errorMessage}
                     </p>
                 )}
+
+                <ContextMenu
+                    rightClickItem={'change'}
+                    contextMenuRef={contextMenuRef}
+                    isToggled={contextMenu.toggled}
+                    positionX={contextMenu.position.x}
+                    positionY={contextMenu.position.y}
+                    buttons={[
+                        {
+                            text: 'Copy',
+                            icon: <CopyIcon />,
+                            onClick: () => copy(editorInstance.current),
+                            isSpacer: false
+                        },
+                        {
+                            text: 'Cut',
+                            icon: <CutIcon />,
+                            onClick: () => cut(editorInstance.current),
+                            isSpacer: false
+                        },
+                        {
+                            text: 'Paste',
+                            icon: <PasteIcon />,
+                            onClick: () => paste(editorInstance.current),
+                            isSpacer: false
+                        },
+                        {
+                            text: '',
+                            icon: '',
+                            onClick: () => null,
+                            isSpacer: true
+                        },
+                        {
+                            text: 'Close',
+                            icon: <CloseIcon />,
+                            onClick: () =>
+                                setContextMenu(prevState => ({
+                                    ...prevState,
+                                    toggled: false
+                                })),
+                            isSpacer: false
+                        }
+                    ]}
+                />
             </div>
-            {/* <button onClick={() => prettify(editorInstance.current)}>Prettify</button> */}
+
             <style dangerouslySetInnerHTML={{ __html: getCombinedStyles() }} />
         </div>
     )
