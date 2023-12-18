@@ -75,7 +75,7 @@ const createBaseManifest = async (): Promise<Manifest> => {
             content_scripts: [
                 {
                     // matches: ['<all_urls>'],
-                    "matches": ["*://docs.google.com/spreadsheets/*", "*://www.notion.so/*"],
+                    "matches": ["*://docs.google.com/spreadsheets/*", "*://www.notion.so/*", "*://onedrive.live.com/*"],
                     js: ['./js/content.js']
                 }
             ],
