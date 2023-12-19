@@ -264,7 +264,7 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         const formatted = formatFunction(content)
         console.log('executing prettify with cm:', cm)
 
-        if (cm && url === 'docs.google.com') {
+        if (cm && url === 'docs.google.com' || 'onedrive.live.com') {
             cm.setValue(formatted)
             console.log('code formatted', content)
         } else {

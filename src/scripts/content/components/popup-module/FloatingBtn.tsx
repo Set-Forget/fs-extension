@@ -19,7 +19,7 @@ const FloatingBtn: React.FC = () => {
     const buttonClasses = `relative w-16 h-16 flex items-center justify-center bg-gradient-to-tr ${
         url === "docs.google.com" ? 'from-green-400 to-emeraldGreen-700' : 'from-gray-900 to-gothamBlack-300'
     } text-3xl text-white font-bold rounded-full z-10 ${isHovered ? 'w-52' : ''} transition-all duration-500 transform grow-on-load scale-0
-    ${url === "onedrive.live.com" ? 'from-emeraldGreen-300 to-[#357CD8]' : ''}`;
+    ${url === "onedrive.live.com" ? 'from-green-500 to-blue-600' : ''}`;
 
     return (
         <div className="!z-[1000] fixed 2xl:bottom-8 2xl:right-8 bottom-4 right-4 flex items-center">
