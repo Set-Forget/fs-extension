@@ -180,14 +180,14 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         const sheetsPrompt = `Please create a google sheets formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`
         const notionPrompt = `Please create a Notion formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`
         const excelOnlinePrompt = `Please create an Excel Online formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`
-        let finalPrompt : any;
+        let finalPrompt: any
 
         if (url === 'docs.google.com') {
-            finalPrompt = sheetsPrompt;
+            finalPrompt = sheetsPrompt
         } else if (url === 'onedrive.live.com') {
-            finalPrompt = excelOnlinePrompt;
+            finalPrompt = excelOnlinePrompt
         } else if (url === 'notion.so') {
-            finalPrompt = notionPrompt;
+            finalPrompt = notionPrompt
         }
 
         console.log(sheetsPrompt, notionPrompt)
@@ -209,7 +209,8 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
                 model: 'gpt-4-1106-preview',
                 temperature: 0.1
             })
-            const responseText = completion.choices[0].message.content.trim()
+            const responseText = completion.choices[0].message.content.trim();
+            const cleanedResponse = cleanGPTResponse(responseText);
 
             let startPosition
             // if error msg, return response in line below
@@ -243,7 +244,7 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
             }
 
             // Start position for typewriter effect
-            insertTextTypewriterStyle(responseText, startPosition)
+            insertTextTypewriterStyle(cleanedResponse, startPosition);
         } catch (error) {
             console.error('Error with GPT:', error)
             setErrorMessage('An error occurred while fetching the formula.')
@@ -257,19 +258,31 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         setErrorMessage('')
     }
 
+
+    const cleanGPTResponse = (response) => {
+        // Split the response into lines
+        const lines = response.split('\n');
+      
+        // Remove lines that contain backticks
+        const cleanedLines = lines.filter(line => !line.trim().startsWith('```'));
+    
+        // Join the cleaned lines back into a single string
+        return cleanedLines.join('\n');
+    }
+
     // formats code
     const prettify = cm => {
         const url = currentUrlRef.current
         const content = cm.getValue()
-        const formatted = formatFunction(content)
-        console.log('executing prettify with cm:', cm)
 
-        if (cm && url === 'docs.google.com' || 'onedrive.live.com') {
+        if (cm && (url === 'docs.google.com' || url === 'onedrive.live.com')) {
+            const formatted = formatFunction(content)
             cm.setValue(formatted)
-            console.log('code formatted', content)
-        } else {
-            cm.setValue(uglify)
-            console.log('uglyfied code for notion', content)
+            console.log('code formatted', formatted)
+        } else if (url === 'notion.so') {
+            const uglified = uglify(content)
+            cm.setValue(uglified)
+            console.log('uglified code for notion', uglified)
         }
     }
 
@@ -395,7 +408,10 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
 
     return (
         <div className="w-full h-full relative" onContextMenu={handleContextMenu}>
-            <div ref={editorRef} className="m max-w-[98%] h-full 2xl:p-2 p-1 relative cursor-default">
+            <div
+                ref={editorRef}
+                className="m max-w-[98%] h-full 2xl:p-2 p-1 relative cursor-default"
+            >
                 <CopyButton copy={copyToClipboard} />
                 {errorMessage && (
                     <p className="text-center text-orange-600 animate-pulse mt-2 text-xs">
