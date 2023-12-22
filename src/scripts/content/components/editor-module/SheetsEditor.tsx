@@ -16,8 +16,8 @@ import '@/lib/codemirror-5.65.15/addon/selection/active-line.js'
 
 import { OpenAI } from '../../../../lib/openai/bundled_openai.js'
 import ContextMenu from './ContextMenu'
-import { copy, cut, paste } from './contextMenuFuncs'
-import { CopyIcon, PasteIcon, CutIcon, CloseIcon } from './contextMenuIcons'
+import { copy, paste } from './contextMenuFuncs'
+import { CopyIcon, PasteIcon, CloseIcon } from './contextMenuIcons'
 
 window.CodeMirror.registerHelper('hint', 'spreadsheet', SpreadsheetHint)
 
@@ -458,12 +458,6 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
                             text: 'Copy',
                             icon: <CopyIcon />,
                             onClick: () => copy(editorInstance.current),
-                            isSpacer: false
-                        },
-                        {
-                            text: 'Cut',
-                            icon: <CutIcon />,
-                            onClick: () => cut(editorInstance.current),
                             isSpacer: false
                         },
                         {
