@@ -18,6 +18,7 @@ import { OpenAI } from '../../../../lib/openai/bundled_openai.js'
 import ContextMenu from './ContextMenu'
 import { copy, paste } from './contextMenuFuncs'
 import { CopyIcon, PasteIcon, CloseIcon } from './contextMenuIcons'
+import { EXCEL_URL, GOOGLE_URL, NOTION_URL } from '@/utils/constants'
 
 window.CodeMirror.registerHelper('hint', 'spreadsheet', SpreadsheetHint)
 
@@ -183,11 +184,11 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         const excelOnlinePrompt = `Please create an Excel Online formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`
         let finalPrompt: any
 
-        if (url === 'docs.google.com') {
+        if (url === GOOGLE_URL) {
             finalPrompt = sheetsPrompt
-        } else if (url === 'onedrive.live.com') {
+        } else if (url === EXCEL_URL) {
             finalPrompt = excelOnlinePrompt
-        } else if (url === 'notion.so') {
+        } else if (url === NOTION_URL) {
             finalPrompt = notionPrompt
         }
 
@@ -277,8 +278,9 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
     const prettify = cm => {
         const url = currentUrlRef.current
         const content = cm.getValue()
+        const IS_GOOGLE_OR_EXCEL = url === GOOGLE_URL || url === EXCEL_URL
 
-        if (cm && (url === 'docs.google.com' || url === 'onedrive.live.com')) {
+        if (cm && IS_GOOGLE_OR_EXCEL) {
             const formatted = formatFunction(content)
             cm.setValue(formatted)
             console.log('code formatted', formatted)
