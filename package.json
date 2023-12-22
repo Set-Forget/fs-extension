@@ -13,7 +13,8 @@
         "build:pre": "esno scripts/prebuild.ts",
         "build:post": "esno scripts/postbuild.ts",
         "build:js": "vite build --config vite.config.content.ts",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "build:exit": "tsc && vite build && npm run build:js && exit 0"
     },
     "author": "Doug Silkstone <doug@withseismic.com>",
     "license": "ISC",
