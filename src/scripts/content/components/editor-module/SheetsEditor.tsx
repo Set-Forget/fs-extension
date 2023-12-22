@@ -25,10 +25,11 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
     const editorRef = useRef(null)
     const editorInstance = useRef(null)
     const [errorMessage, setErrorMessage] = useState('')
-    const [sheetData, setSheetData] = useState(null)
+    const [isFetching, setIsFetching] = useState<boolean>(false)
+    let fetching: boolean = false
+
     const sheetDataRef = useRef(null)
 
-    const [url, setUrl] = useState<string | null>(null)
     const currentUrlRef = useRef<string | null>(null)
 
     const contextMenuRef = useRef(null)
@@ -59,7 +60,6 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         // Fetch URL and store in ref
         const storedUrl = sessionStorage.getItem('currentUrl')
         currentUrlRef.current = storedUrl
-        setUrl(storedUrl)
     }, [])
 
     useEffect(() => {
@@ -73,7 +73,6 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
                 }
                 const data = await response.json()
                 sheetDataRef.current = data
-                setSheetData(data)
             } catch (error) {
                 console.error('Fetch error:', error)
             }
@@ -172,8 +171,10 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
 
     // handle gpt prompt from editor
     const handleShiftEnter = async editor => {
+        if (fetching) return
+        fetching = true
+        setIsFetching(true)
         const url = currentUrlRef.current
-        const sheetData = sheetDataRef.current
         const currentLine = editor.getCursor().line
         const promptText = editor.getLine(currentLine)
 
@@ -209,8 +210,8 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
                 model: 'gpt-4-1106-preview',
                 temperature: 0.1
             })
-            const responseText = completion.choices[0].message.content.trim();
-            const cleanedResponse = cleanGPTResponse(responseText);
+            const responseText = completion.choices[0].message.content.trim()
+            const cleanedResponse = cleanGPTResponse(responseText)
 
             let startPosition
             // if error msg, return response in line below
@@ -244,10 +245,13 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
             }
 
             // Start position for typewriter effect
-            insertTextTypewriterStyle(cleanedResponse, startPosition);
+            insertTextTypewriterStyle(cleanedResponse, startPosition)
         } catch (error) {
             console.error('Error with GPT:', error)
             setErrorMessage('An error occurred while fetching the formula.')
+        } finally {
+            setIsFetching(false)
+            fetching = false
         }
     }
 
@@ -258,16 +262,15 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         setErrorMessage('')
     }
 
-
-    const cleanGPTResponse = (response) => {
+    const cleanGPTResponse = response => {
         // Split the response into lines
-        const lines = response.split('\n');
-      
+        const lines = response.split('\n')
+
         // Remove lines that contain backticks
-        const cleanedLines = lines.filter(line => !line.trim().startsWith('```'));
-    
+        const cleanedLines = lines.filter(line => !line.trim().startsWith('```'))
+
         // Join the cleaned lines back into a single string
-        return cleanedLines.join('\n');
+        return cleanedLines.join('\n')
     }
 
     // formats code
@@ -413,6 +416,31 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
                 className="m max-w-[98%] h-full 2xl:p-2 p-1 relative cursor-default"
             >
                 <CopyButton copy={copyToClipboard} />
+                {isFetching && (
+                    <span className="flex justify-center m-2 text-sm text-blue-600 transition ease-in-out duration-150">
+                        <svg
+                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                stroke-width="4"
+                            ></circle>
+                            <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                        </svg>
+                        Processing...
+                    </span>
+                )}
                 {errorMessage && (
                     <p className="text-center text-orange-600 animate-pulse mt-2 text-xs">
                         {errorMessage}
