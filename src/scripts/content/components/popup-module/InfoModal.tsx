@@ -1,16 +1,21 @@
-import React from "react";
+import React from 'react'
 
 type InfoModalProps = {
-    dm: boolean;
-    show: boolean;
-};
+    dm: boolean
+    show: boolean
+}
 
 const InfoModal: React.FC<InfoModalProps> = ({ dm, show }) => {
-
-    const modalClasses = `transition-all origin-right duration-100 ease-in transform ${show ? 'opacity-95 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`;
+    const modalClasses = `transition-all origin-right duration-100 ease-in transform ${
+        show ? 'opacity-95 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'
+    }`
 
     return (
-        <div className={`p-4 text-xs rounded-lg absolute top-0 -left-[20rem] shadow-lg ${dm ? 'bg-[#32332D]' : 'bg-white'} ${modalClasses}`}>
+        <div
+            className={`p-4 text-xs rounded-lg absolute top-0 -left-[20rem] shadow-lg ${
+                dm ? 'bg-[#32332D]' : 'bg-white'
+            } ${modalClasses}`}
+        >
             <ul className="flex flex-col space-y-4">
                 <li className="flex space-x-2 justify-between">
                     <b>Shift + Enter</b>
@@ -33,4 +38,4 @@ const InfoModal: React.FC<InfoModalProps> = ({ dm, show }) => {
     )
 }
 
-export default InfoModal;
+export default InfoModal

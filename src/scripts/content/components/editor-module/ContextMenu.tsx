@@ -22,7 +22,7 @@ const ContextMenu = ({
                         <hr key={index} className="border-0 border-b border-gray-300 my-1.5"></hr>
                     )
                 return (
-                    <div className='w-full rounded-md flex justify-between items-center gap-7 px-1.5 py-2 cursor-pointer hover:bg-green-500 hover:text-white'>
+                    <div className="w-full rounded-md flex justify-between items-center gap-7 px-1.5 py-2 cursor-pointer hover:bg-green-500 hover:text-white">
                         <button
                             onClick={e => button.onClick(e, rightClickItem)}
                             key={index}
