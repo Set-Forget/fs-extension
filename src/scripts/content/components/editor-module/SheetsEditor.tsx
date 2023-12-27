@@ -16,10 +16,10 @@ import '@/lib/codemirror-5.65.15/addon/selection/active-line.js'
 
 import ContextMenu from './ContextMenu'
 import { copy, paste } from './contextMenuFuncs'
-import { CopyIcon, PasteIcon, CloseIcon } from './contextMenuIcons'
+import { CopyIcon, PasteIcon, CloseIcon, LoadingIcon } from './contextMenuIcons'
 import { uglify, formatFunction } from './formatFuncs'
 import { clearEditor, enterFunction, shiftEnter } from './editorFuncs'
-import { EXCEL_URL, GOOGLE_URL } from '@/utils/constants'
+import { EXCEL_URL, GOOGLE_URL, NOTION_URL } from '@/utils/constants'
 
 window.CodeMirror.registerHelper('hint', 'spreadsheet', SpreadsheetHint)
 
@@ -152,6 +152,30 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady, isFormatted }) => {
         return () => window.removeEventListener('click', closeContextMenu)
     }, [])
 
+    // format code
+    const prettify = cm => {
+        const url = currentUrlRef.current
+        const content = cm.getValue()
+        const IS_GOOGLE_OR_EXCEL = url === GOOGLE_URL || url === EXCEL_URL
+        const haveContent = Boolean(contentWithOutFormat)
+
+        if (cm && IS_GOOGLE_OR_EXCEL) {
+            if (isFormatted && haveContent) cm.setValue(contentWithOutFormat)
+            else {
+                const formatted = formatFunction(content)
+                cm.setValue(formatted)
+                if (!haveContent) setContentWithOutFormat(formatted)
+            }
+        } else if (url === NOTION_URL) {
+            if (isFormatted && haveContent) cm.setValue(contentWithOutFormat)
+            else {
+                const uglified = uglify(content)
+                cm.setValue(uglified)
+                if (!haveContent) setContentWithOutFormat(uglified)
+            }
+        }
+    }
+
     // handle gpt prompt from editor
     const handleShiftEnter = async editor => {
         shiftEnter(
@@ -163,30 +187,6 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady, isFormatted }) => {
             prettify,
             isFormatted
         )
-    }
-
-    const prettify = cm => {
-        const url = currentUrlRef.current
-        const content = cm.getValue()
-        const IS_GOOGLE_OR_EXCEL = url === GOOGLE_URL || url === EXCEL_URL
-        const haveContent = Boolean(contentWithOutFormat)
-
-        if (cm && IS_GOOGLE_OR_EXCEL) {
-            if (isFormatted && haveContent) cm.setValue(contentWithOutFormat)
-            else {
-                const formatted = formatFunction(content)
-                console.log('format', formatted)
-                cm.setValue(formatted)
-                if (!haveContent) setContentWithOutFormat(formatted)
-            }
-        } else if (url === 'notion.so') {
-            if (isFormatted && haveContent) cm.setValue(contentWithOutFormat)
-            else {
-                const uglified = uglify(content)
-                cm.setValue(uglified)
-                if (!haveContent) setContentWithOutFormat(uglified)
-            }
-        }
     }
 
     // clears the editor of all content (might need a warning)
@@ -208,26 +208,7 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady, isFormatted }) => {
                 <CopyButton copy={copyToClipboard} />
                 {isFetching && (
                     <span className="flex justify-center m-2 text-sm text-blue-600 transition ease-in-out duration-150">
-                        <svg
-                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                stroke-width="4"
-                            ></circle>
-                            <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                        </svg>
+                        <LoadingIcon />
                         Processing...
                     </span>
                 )}
