@@ -5,7 +5,8 @@ import SheetsEditor from '../editor-module/SheetsEditor'
 const CustomPopup = ({ showPopup }) => {
     const [isExpanded, setIsExpanded] = useState(false)
     const [darkMode, setDarkMode] = useState(false)
-    const [prettifyFunction, setPrettifyFunction] = useState(() => () => {})
+    const [isFormatted, setIsFormatted] = useState<boolean>(false)
+    const [prettify, setPrettify] = useState(() => () => {})
 
     // Determine the theme name based on darkMode
     const themeName = darkMode ? 'midnight' : 'isotope'
@@ -23,12 +24,13 @@ const CustomPopup = ({ showPopup }) => {
         setIsExpanded(!isExpanded)
     }
 
-    const handlePrettifyFunction = func => {
-        setPrettifyFunction(() => func)
+    const handlePrettify = func => {
+        setPrettify(() => func)
     }
 
     return (
         <div
+            //TODO consider move to a const
             className={`fixed 2xl:bottom-28 2xl:right-8 bottom-24 right-3 origin-right ${
                 isExpanded ? 'w-[35vw] h-[85vh]' : 'w-[25vw] h-[65vh]'
             } bg-white text-fsblack  shadow-lg rounded-lg transform transition-all duration-[400ms] flex flex-col ${
@@ -36,15 +38,21 @@ const CustomPopup = ({ showPopup }) => {
             } ${darkMode ? '!bg-[#141414] !text-fswhite' : ''}`}
         >
             {/* Pass the themeName prop to SheetsEditor */}
-            <SheetsEditor themeName={themeName} onPrettifyFunctionReady={handlePrettifyFunction} />
+            <SheetsEditor
+                themeName={themeName}
+                isFormatted={isFormatted}
+                onPrettifyFunctionReady={handlePrettify}
+            />
 
             {/* Bottom Navbar */}
             <InternalNavbar
                 darkMode={darkMode}
                 toggleDarkMode={() => setDarkMode(prevMode => !prevMode)}
                 onExpandToggle={handleExpandToggle}
+                isFormatted={isFormatted}
+                setIsFormatted={setIsFormatted}
                 isExpanded={isExpanded}
-                prettify={prettifyFunction} 
+                prettify={prettify}
             />
         </div>
     )

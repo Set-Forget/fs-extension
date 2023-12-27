@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import FloatingBtn from './components/popup-module/FloatingBtn'
 import '../../lib/codemirror-5.65.15/lib/codemirror.css'
+import { EXCEL_URL, GOOGLE_URL, NOTION_URL } from '@/utils/constants'
 
 const App = () => {
     const [isOpen, setIsOpen] = useState(false)
-
-    const toggleIsOpen = () => {
-        setIsOpen(!isOpen)
-    }
 
     useEffect(() => {
         console.log('Formula Studio: Loaded')
@@ -15,12 +12,12 @@ const App = () => {
         const currentUrl = new URL(window.location.href)
         let simplifiedUrl = ''
 
-        if (currentUrl.hostname.includes('docs.google.com')) {
-            simplifiedUrl = 'docs.google.com'
-        } else if (currentUrl.hostname.includes('notion.so')) {
-            simplifiedUrl = 'notion.so'
-        } else if (currentUrl.hostname.includes('onedrive.live.com')) {
-            simplifiedUrl = 'onedrive.live.com'
+        if (currentUrl.hostname.includes(GOOGLE_URL)) {
+            simplifiedUrl = GOOGLE_URL
+        } else if (currentUrl.hostname.includes(NOTION_URL)) {
+            simplifiedUrl = NOTION_URL
+        } else if (currentUrl.hostname.includes(EXCEL_URL)) {
+            simplifiedUrl = EXCEL_URL
         }
 
         console.log('simplified url', simplifiedUrl)
