@@ -11,7 +11,7 @@ const FloatingBtn: React.FC = () => {
 
     useEffect(() => {
         // Immediately invoked function to fetch and set the URL
-        (function fetchUrl() {
+        ;(function fetchUrl() {
             const currentUrl = sessionStorage.getItem('currentUrl')
             setUrl(currentUrl)
         })()

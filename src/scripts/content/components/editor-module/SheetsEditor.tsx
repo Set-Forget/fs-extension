@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import SpreadsheetHint from './SpreadsheetsHint'
 import CopyButton from './CopyButton'
 import '@/lib/codemirror-5.65.15/lib/codemirror.js'
@@ -14,19 +14,22 @@ import '@/lib/codemirror-5.65.15/addon/edit/closebrackets.js'
 import '@/lib/codemirror-5.65.15/addon/edit/matchbrackets.js'
 import '@/lib/codemirror-5.65.15/addon/selection/active-line.js'
 
-import { OpenAI } from '../../../../lib/openai/bundled_openai.js'
 import ContextMenu from './ContextMenu'
 import { copy, paste } from './contextMenuFuncs'
 import { CopyIcon, PasteIcon, CloseIcon } from './contextMenuIcons'
-import { EXCEL_URL, GOOGLE_URL, NOTION_URL } from '@/utils/constants'
+import { uglify, formatFunction } from './formatFuncs'
+import { clearEditor, enterFunction, shiftEnter } from './editorFuncs'
+import { EXCEL_URL, GOOGLE_URL } from '@/utils/constants'
 
 window.CodeMirror.registerHelper('hint', 'spreadsheet', SpreadsheetHint)
 
-const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
+const SheetsEditor = ({ themeName, onPrettifyFunctionReady, isFormatted }) => {
     const editorRef = useRef(null)
     const editorInstance = useRef(null)
     const [errorMessage, setErrorMessage] = useState('')
     const [isFetching, setIsFetching] = useState<boolean>(false)
+    const [contentWithOutFormat, setContentWithOutFormat] = useState('')
+
     let fetching: boolean = false
 
     const sheetDataRef = useRef(null)
@@ -42,20 +45,14 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         toggled: false
     })
 
-    const apiKey = import.meta.env.VITE_GPTKEY.toString()
+    const handlePrettify = useCallback(() => {
+        if (!editorInstance.current || !onPrettifyFunctionReady) return
+        onPrettifyFunctionReady(() => prettify(editorInstance.current))
+    }, [editorInstance.current, onPrettifyFunctionReady])
 
     useEffect(() => {
-        // Make sure this function is only set once the editorInstance is initialized
-        if (editorInstance.current && onPrettifyFunctionReady) {
-            // Define a new function that calls prettify with the current CodeMirror instance
-            const handlePrettify = () => {
-                prettify(editorInstance.current)
-            }
-
-            // Pass this new function to the parent
-            onPrettifyFunctionReady(handlePrettify)
-        }
-    }, [editorInstance.current, onPrettifyFunctionReady])
+        handlePrettify()
+    }, [handlePrettify])
 
     useEffect(() => {
         // Fetch URL and store in ref
@@ -145,262 +142,6 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         }
     }, [themeName])
 
-    // determine which theme styles to apply
-    const getCombinedStyles = () => {
-        const combinedStyles =
-            showHintStyles.toString() +
-            (themeName === 'midnight'
-                ? monokaiThemeStyles.toString()
-                : paraisoLightStyles.toString())
-        return combinedStyles
-    }
-
-    // copies content of editor to clipboard
-    const copyToClipboard = () => {
-        const content = editorInstance.current && editorInstance.current.getValue()
-        if (content) {
-            navigator.clipboard
-                .writeText(content)
-                .then(() => {
-                    console.log('Content copied to clipboard')
-                })
-                .catch(err => {
-                    console.error('Could not copy text: ', err)
-                })
-        }
-    }
-
-    // handle gpt prompt from editor
-    const handleShiftEnter = async editor => {
-        if (fetching) return
-        fetching = true
-        setIsFetching(true)
-        const url = currentUrlRef.current
-        const currentLine = editor.getCursor().line
-        const promptText = editor.getLine(currentLine)
-
-        const sheetsPrompt = `Please create a google sheets formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`
-        const notionPrompt = `Please create a Notion formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`
-        const excelOnlinePrompt = `Please create an Excel Online formula with the following characteristics: ${promptText} . Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer "Formula could not be created".`
-        let finalPrompt: any
-
-        if (url === GOOGLE_URL) {
-            finalPrompt = sheetsPrompt
-        } else if (url === EXCEL_URL) {
-            finalPrompt = excelOnlinePrompt
-        } else if (url === NOTION_URL) {
-            finalPrompt = notionPrompt
-        }
-
-        console.log(sheetsPrompt, notionPrompt)
-
-        console.log('Current URL:', url)
-
-        const openai = new OpenAI({
-            apiKey: apiKey,
-            dangerouslyAllowBrowser: true
-        })
-        try {
-            const completion = await openai.chat.completions.create({
-                messages: [
-                    {
-                        role: 'user',
-                        content: finalPrompt
-                    }
-                ],
-                model: 'gpt-4-1106-preview',
-                temperature: 0.1
-            })
-            const responseText = completion.choices[0].message.content.trim()
-            const cleanedResponse = cleanGPTResponse(responseText)
-
-            let startPosition
-            // if error msg, return response in line below
-            if (responseText === 'Formula could not be created') {
-                setErrorMessage(responseText)
-            } else {
-                // ff the response is a formula, replace the current line
-                setErrorMessage('')
-                startPosition = { line: currentLine, ch: 0 }
-                editor.replaceRange(
-                    '',
-                    { line: currentLine, ch: 0 },
-                    { line: currentLine + 1, ch: 0 }
-                )
-            }
-
-            const insertTextTypewriterStyle = (text, position, index = 0, delay = 25) => {
-                if (index < text.length) {
-                    editor.replaceRange(text[index], position)
-                    let nextPosition = { ...position, ch: position.ch + 1 }
-                    if (text[index] === '\n') {
-                        nextPosition = { line: position.line + 1, ch: 0 }
-                    }
-                    setTimeout(() => {
-                        insertTextTypewriterStyle(text, nextPosition, index + 1, delay)
-                    }, delay)
-                } else {
-                    // After the entire text is inserted, call prettify
-                    prettify(editor)
-                }
-            }
-
-            // Start position for typewriter effect
-            insertTextTypewriterStyle(cleanedResponse, startPosition)
-        } catch (error) {
-            console.error('Error with GPT:', error)
-            setErrorMessage('An error occurred while fetching the formula.')
-        } finally {
-            setIsFetching(false)
-            fetching = false
-        }
-    }
-
-    // clears the editor of all content (might need a warning)
-    const handleClearEditor = cm => {
-        console.log('Clear command triggered')
-        cm.setValue('')
-        setErrorMessage('')
-    }
-
-    const cleanGPTResponse = response => {
-        // Split the response into lines
-        const lines = response.split('\n')
-
-        // Remove lines that contain backticks
-        const cleanedLines = lines.filter(line => !line.trim().startsWith('```'))
-
-        // Join the cleaned lines back into a single string
-        return cleanedLines.join('\n')
-    }
-
-    // formats code
-    const prettify = cm => {
-        const url = currentUrlRef.current
-        const content = cm.getValue()
-        const IS_GOOGLE_OR_EXCEL = url === GOOGLE_URL || url === EXCEL_URL
-
-        if (cm && IS_GOOGLE_OR_EXCEL) {
-            const formatted = formatFunction(content)
-            cm.setValue(formatted)
-            console.log('code formatted', formatted)
-        } else if (url === 'notion.so') {
-            const uglified = uglify(content)
-            cm.setValue(uglified)
-            console.log('uglified code for notion', uglified)
-        }
-    }
-
-    const uglify = func => {
-        let uglifiedFunc = ''
-        let inString = false
-
-        for (let i = 0; i < func.length; i++) {
-            const char = func[i]
-
-            // Handle string literals
-            if (char === '"' && (i === 0 || func[i - 1] !== '\\')) {
-                inString = !inString
-            }
-
-            if (!inString) {
-                if (char !== ' ' && char !== '\n' && char !== '\t') {
-                    uglifiedFunc += char
-                }
-            } else {
-                uglifiedFunc += char
-            }
-        }
-
-        return uglifiedFunc
-    }
-
-    const formatFunction = func => {
-        let indentLevel = 0
-        let formattedFunc = ''
-        let inString = false // To handle strings within the function
-
-        for (let i = 0; i < func.length; i++) {
-            const char = func[i]
-
-            // Handle string literals
-            if (char === '"' && (i === 0 || func[i - 1] !== '\\')) {
-                inString = !inString
-            }
-
-            if (!inString) {
-                if (char === '(') {
-                    indentLevel++
-                    formattedFunc += char + '\n' + ' '.repeat(indentLevel * 2)
-                } else if (char === ')') {
-                    indentLevel = Math.max(indentLevel - 1, 0)
-                    formattedFunc += '\n' + ' '.repeat(indentLevel * 2) + char
-                } else if (char === ',') {
-                    formattedFunc += char + '\n' + ' '.repeat(indentLevel * 2)
-                } else {
-                    formattedFunc += char
-                }
-            } else {
-                formattedFunc += char
-            }
-        }
-
-        return formattedFunc
-    }
-
-    // Custom Enter function that handles automatic indentation for parentheses
-    const customEnterFunction = cm => {
-        const cursor = cm.getCursor()
-        const line = cm.getLine(cursor.line)
-        const beforeCursor = line.slice(0, cursor.ch)
-        const afterCursor = line.slice(cursor.ch)
-
-        // Check if the cursor is between parentheses
-        if (beforeCursor.endsWith('(') && afterCursor.startsWith(')')) {
-            const baseIndent = ' '.repeat(cm.getOption('indentUnit')) // Use the editor's indent unit
-            const additionalIndent = ' '.repeat(2) // Additional indentation for the new line
-
-            // Insert new lines and adjust cursor position
-            cm.replaceRange(
-                '\n' + baseIndent + additionalIndent + '\n' + baseIndent,
-                { line: cursor.line, ch: cursor.ch },
-                { line: cursor.line, ch: cursor.ch }
-            )
-
-            // Set the cursor position
-            cm.setCursor({ line: cursor.line + 1, ch: baseIndent.length + additionalIndent.length })
-        } else {
-            // Default behavior for Enter key
-            cm.execCommand('newlineAndIndent')
-        }
-    }
-
-    const handleContextMenu = e => {
-        e.preventDefault()
-
-        const editorRect = editorRef.current.getBoundingClientRect()
-        const menuWidth = contextMenuRef.current.offsetWidth
-        const menuHeight = contextMenuRef.current.offsetHeight
-
-        let x = e.clientX - editorRect.left
-        let y = e.clientY - editorRect.top
-
-        // Adjust if the menu goes off to the right
-        if (x + menuWidth > editorRect.width) {
-            x -= x + menuWidth - editorRect.width
-        }
-
-        // Adjust if the menu goes off to the bottom
-        if (y + menuHeight > editorRect.height) {
-            y -= y + menuHeight - editorRect.height
-        }
-
-        setContextMenu({
-            position: { x, y },
-            toggled: true
-        })
-    }
-
     useEffect(() => {
         const closeContextMenu = () => {
             console.log('Window click detected, closing context menu')
@@ -410,6 +151,53 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
         window.addEventListener('click', closeContextMenu)
         return () => window.removeEventListener('click', closeContextMenu)
     }, [])
+
+    // handle gpt prompt from editor
+    const handleShiftEnter = async editor => {
+        shiftEnter(
+            editor,
+            fetching,
+            setIsFetching,
+            currentUrlRef,
+            setErrorMessage,
+            prettify,
+            isFormatted
+        )
+    }
+
+    const prettify = cm => {
+        const url = currentUrlRef.current
+        const content = cm.getValue()
+        const IS_GOOGLE_OR_EXCEL = url === GOOGLE_URL || url === EXCEL_URL
+        const haveContent = Boolean(contentWithOutFormat)
+
+        if (cm && IS_GOOGLE_OR_EXCEL) {
+            if (isFormatted && haveContent) cm.setValue(contentWithOutFormat)
+            else {
+                const formatted = formatFunction(content)
+                console.log('format', formatted)
+                cm.setValue(formatted)
+                if (!haveContent) setContentWithOutFormat(formatted)
+            }
+        } else if (url === 'notion.so') {
+            if (isFormatted && haveContent) cm.setValue(contentWithOutFormat)
+            else {
+                const uglified = uglify(content)
+                cm.setValue(uglified)
+                if (!haveContent) setContentWithOutFormat(uglified)
+            }
+        }
+    }
+
+    // clears the editor of all content (might need a warning)
+    const handleClearEditor = cm => {
+        clearEditor(cm, setErrorMessage)
+    }
+
+    // Custom Enter function that handles automatic indentation for parentheses
+    const customEnterFunction = cm => {
+        enterFunction(cm)
+    }
 
     return (
         <div className="w-full h-full relative" onContextMenu={handleContextMenu}>
@@ -491,6 +279,55 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady }) => {
             <style dangerouslySetInnerHTML={{ __html: getCombinedStyles() }} />
         </div>
     )
+
+    function handleContextMenu(e) {
+        e.preventDefault()
+
+        const editorRect = editorRef.current.getBoundingClientRect()
+        const menuWidth = contextMenuRef.current.offsetWidth
+        const menuHeight = contextMenuRef.current.offsetHeight
+
+        let x = e.clientX - editorRect.left
+        let y = e.clientY - editorRect.top
+
+        // Adjust if the menu goes off to the right
+        if (x + menuWidth > editorRect.width) {
+            x -= x + menuWidth - editorRect.width
+        }
+
+        // Adjust if the menu goes off to the bottom
+        if (y + menuHeight > editorRect.height) {
+            y -= y + menuHeight - editorRect.height
+        }
+
+        setContextMenu({
+            position: { x, y },
+            toggled: true
+        })
+    }
+
+    // copies content of editor to clipboard
+    function copyToClipboard() {
+        const content = editorInstance.current && editorInstance.current.getValue()
+        if (content) {
+            navigator.clipboard
+                .writeText(content)
+                .then(() => {
+                    console.log('Content copied to clipboard')
+                })
+                .catch(err => {
+                    console.error('Could not copy text: ', err)
+                })
+        }
+    }
+
+    // determine which theme styles to apply
+    function getCombinedStyles() {
+        return (
+            String(showHintStyles) +
+            (themeName === 'midnight' ? String(monokaiThemeStyles) : String(paraisoLightStyles))
+        )
+    }
 }
 
 export default SheetsEditor
