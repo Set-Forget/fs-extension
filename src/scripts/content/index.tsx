@@ -32,7 +32,7 @@ const injectReact = (rootId: string): void => {
         root.render(
             <React.StrictMode>
                 <>
-                    {isProduction && <style>{styles.toString() + codemirrorStyles.toString()}</style>}
+                    {isProduction && <style>{String(styles) + String(codemirrorStyles)}</style>}
                     <App />
                 </>
             </React.StrictMode>
