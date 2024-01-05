@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react'
-import SpreadsheetHint from './SpreadsheetsHint'
+import spreadsheetsHint from './SpreadsheetsHint'
 import CopyButton from './CopyButton'
 import '@/lib/codemirror-5.65.15/lib/codemirror.js'
 import '@/lib/codemirror-5.65.15/mode/spreadsheet/spreadsheet.js'
@@ -23,7 +23,7 @@ import { OpenAI } from '../../../../lib/openai/bundled_openai.js'
 
 export const apiKey = String(import.meta.env.VITE_GPTKEY)
 
-window.CodeMirror.registerHelper('hint', 'spreadsheet', SpreadsheetHint)
+window.CodeMirror.registerHelper('hint', 'spreadsheet', spreadsheetsHint)
 
 const SheetsEditor = ({ themeName, onPrettifyFunctionReady, isFormatted }) => {
     const editorRef = useRef(null)
@@ -90,7 +90,7 @@ const SheetsEditor = ({ themeName, onPrettifyFunctionReady, isFormatted }) => {
                         if (!cm.state.completionActive) {
                             cm.showHint({
                                 completeSingle: false,
-                                hint: SpreadsheetHint,
+                                hint: spreadsheetsHint,
                                 container: editorRef.current
                             })
                         }
