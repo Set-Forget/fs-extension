@@ -10,8 +10,8 @@ const CustomPopup = ({ showPopup }) => {
     const [positionX, setPositionX] = useState<string>('')
     const [prettify, setPrettify] = useState(() => () => {})
 
-    const url = sessionStorage.getItem('currentUrl');
-    
+    const url = sessionStorage.getItem('currentUrl')
+
     // Determine the theme name based on darkMode
     const themeName = darkMode ? 'midnight' : 'isotope'
 
