@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
+import { ContentContext } from '../../context'
 import CustomPopup from './CustomPopup'
 import { EXCEL_URL, GOOGLE_URL } from '@/utils/constants'
 
 const FloatingBtn: React.FC = () => {
-    const [showPopup, setShowPopup] = useState<boolean>(false)
-    const [isHovered, setIsHovered] = useState<boolean>(false)
-    const [url, setUrl] = useState<string | null>(null)
+    const { dispatch, state } = useContext(ContentContext)
+    const { showPopup, url, isHovered } = state
 
     const buttonText: string = showPopup ? 'Close Formula Studio' : 'Open Formula Studio'
 
     useEffect(() => {
-        // Immediately invoked function to fetch and set the URL
-        ;(function fetchUrl() {
-            const currentUrl = sessionStorage.getItem('currentUrl')
-            setUrl(currentUrl)
-        })()
+        const currentUrl = sessionStorage.getItem('currentUrl')
+        dispatch({ type: 'SET_URL', payload: currentUrl })
     }, [])
 
     const buttonClasses = `relative w-16 h-16 flex items-center justify-center bg-gradient-to-tr ${
@@ -29,11 +26,11 @@ const FloatingBtn: React.FC = () => {
     return (
         <div className="!z-[1000] fixed 2xl:bottom-8 2xl:right-8 bottom-4 right-4 flex items-center">
             <div
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
                 className="flex items-center"
             >
-                <div onClick={() => setShowPopup(!showPopup)} className={buttonClasses}>
+                <div onClick={handleTooglePopUp} className={buttonClasses}>
                     <p
                         style={{
                             transition: isHovered ? 'opacity 500ms 300ms' : 'opacity 200ms'
@@ -65,10 +62,21 @@ const FloatingBtn: React.FC = () => {
                     </p>
                 </div>
             </div>
-
-            <CustomPopup showPopup={showPopup} />
+            <CustomPopup/>
         </div>
     )
+
+    function handleMouseEnter() {
+        dispatch({ type: 'SET_HOVERED', payload: true })
+    }
+
+    function handleMouseLeave() {
+        dispatch({ type: 'SET_HOVERED', payload: false })
+    }
+
+    function handleTooglePopUp() {
+        dispatch({ type: 'TOGGLE_POPUP' })
+    }
 }
 
 export default FloatingBtn

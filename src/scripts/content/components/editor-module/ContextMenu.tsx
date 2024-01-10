@@ -1,13 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { ContentContext } from '../../context'
 
-const ContextMenu = ({
-    rightClickItem,
-    positionX,
-    positionY,
-    isToggled,
-    buttons,
-    contextMenuRef
-}) => {
+const ContextMenu = ({ rightClickItem, buttons, contextMenuRef }) => {
+    const { state } = useContext(ContentContext)
+    const { contextMenu } = state
+    const { toggled: isToggled, position } = contextMenu
+    const { x: positionX, y: positionY } = position
+
     return (
         <menu
             ref={contextMenuRef}
@@ -19,13 +18,18 @@ const ContextMenu = ({
             {buttons.map((button, index) => {
                 if (button.isSpacer)
                     return (
-                        <hr key={index} className="border-0 border-b border-gray-300 my-1.5"></hr>
+                        <hr
+                            key={'hr' + index}
+                            className="border-0 border-b border-gray-300 my-1.5"
+                        ></hr>
                     )
                 return (
-                    <div className="w-full rounded-md flex justify-between items-center gap-7 px-1.5 py-2 cursor-pointer hover:bg-green-500 hover:text-white">
+                    <div
+                        key={'div' + index}
+                        className="w-full rounded-md flex justify-between items-center gap-7 px-1.5 py-2 cursor-pointer hover:bg-green-500 hover:text-white"
+                    >
                         <button
                             onClick={e => button.onClick(e, rightClickItem)}
-                            key={index}
                             className="context-menu-btn  text-black"
                         >
                             {button.text}

@@ -5,7 +5,7 @@ import App from './App'
 import codemirrorStyles from '../../lib/codemirror-5.65.15/lib/codemirror.css?inline';
 
 const isProduction: boolean = process.env.NODE_ENV === 'production'
-const ROOT_ID = 'RENAME_ME_IF_YOU_WANT'
+const ROOT_ID = 'EDITOR'
 
 const injectReact = (rootId: string): void => {
     try {

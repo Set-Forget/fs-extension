@@ -11,7 +11,7 @@ export const uglify = content => {
         }
 
         if (!inString) {
-            if (char !== ' ' && char !== '\n' && char !== '\t') {
+            if (char !== '\n' && char !== '\t') {
                 uglifiedFunc += char
             }
         } else {
