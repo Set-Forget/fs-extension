@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import FloatingBtn from './components/popup-module/FloatingBtn'
 import '../../lib/codemirror-5.65.15/lib/codemirror.css'
+import { ContentProvider } from './context'
 import { EXCEL_URL, GOOGLE_URL, NOTION_URL } from '@/utils/constants'
+import RootComponent from './components'
 
 const App = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -29,15 +30,7 @@ const App = () => {
         })
     }, [])
 
-    return (
-        <>
-            {isOpen && (
-                <div className="z-[9999] fixed bottom-10 right-10 p-6 cursor-pointer opacity-[98%]">
-                    <FloatingBtn />
-                </div>
-            )}
-        </>
-    )
+    return <ContentProvider>{isOpen && <RootComponent />}</ContentProvider>
 }
 
 export default App

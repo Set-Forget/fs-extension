@@ -1,25 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
+import { ContentContext } from '../../context'
 import InfoModal from './InfoModal'
 import { CompactIcon, ExpandIcon, FormatterIcon, HelpIcon, MoonIcon, SunIcon } from './NavbarIcons'
 
-const InternalNavbar = ({
-    darkMode,
-    toggleDarkMode,
-    onExpandToggle,
-    isExpanded,
-    prettify,
-    setIsFormatted,
-    isFormatted
-}) => {
+const InternalNavbar = ({ onExpandToggle }) => {
+    const { state, dispatch } = useContext(ContentContext)
+    const { prettify, darkMode, isExpanded } = state
     const [showInfoModal, setShowInfoModal] = useState(false)
     const dm = darkMode
 
     return (
         <div className="fixed inset-x-0 bottom-0 z-10 w-full h-12 flex justify-between items-center px-8">
-            <div
-                onMouseEnter={() => setShowInfoModal(true)}
-                onMouseLeave={() => setShowInfoModal(false)}
-            >
+            <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                 <HelpIcon darkMode={darkMode} />
                 <InfoModal show={showInfoModal} dm={dm} />
             </div>
@@ -29,7 +21,7 @@ const InternalNavbar = ({
                     <FormatterIcon darkMode={darkMode} addPrettify={addPrettify} />
                 </button>
 
-                <button onClick={toggleDarkMode}>{darkMode ? <SunIcon /> : <MoonIcon />}</button>
+                <button onClick={handleClick}>{darkMode ? <SunIcon /> : <MoonIcon />}</button>
 
                 <button onClick={onExpandToggle}>
                     {!isExpanded ? (
@@ -42,9 +34,20 @@ const InternalNavbar = ({
         </div>
     )
 
+    function handleClick() {
+        dispatch({ type: 'TOGGLE_DARK_MODE' })
+    }
+
+    function handleMouseEnter() {
+        setShowInfoModal(true)
+    }
+
+    function handleMouseLeave() {
+        setShowInfoModal(false)
+    }
+
     function addPrettify() {
         prettify()
-        setIsFormatted(!isFormatted)
     }
 }
 

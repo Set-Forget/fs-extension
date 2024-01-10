@@ -1,37 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
+import { ContentContext } from '../../context'
 import InternalNavbar from './InternalNavbar'
 import SheetsEditor from '../editor-module/SheetsEditor'
 import { EXCEL_URL, ONE_HUNDRED, ONE_THOUSAND } from '@/utils/constants'
 
-const CustomPopup = ({ showPopup }) => {
-    const [isExpanded, setIsExpanded] = useState(false)
-    const [darkMode, setDarkMode] = useState(false)
-    const [isFormatted, setIsFormatted] = useState<boolean>(false)
+const CustomPopup = () => {
+    const { state, dispatch } = useContext(ContentContext)
+    const { showPopup, url, darkMode, isExpanded } = state
     const [positionX, setPositionX] = useState<string>('')
-    const [prettify, setPrettify] = useState(() => () => {})
-
-    const url = sessionStorage.getItem('currentUrl')
 
     // Determine the theme name based on darkMode
     const themeName = darkMode ? 'midnight' : 'isotope'
 
     useEffect(() => {
-        // Update the body class
         const themeClass = darkMode ? 'dark' : 'light'
         document.body.classList.remove('dark', 'light')
         document.body.classList.add(themeClass)
-
-        // Any other theme-related side effects can go here
     }, [darkMode])
-
-    const handleExpandToggle = () => {
-        if (!isExpanded && Number(positionX) > ONE_THOUSAND) return
-        setIsExpanded(!isExpanded)
-    }
-
-    const handlePrettify = func => {
-        setPrettify(() => func)
-    }
 
     const className = `fixed 2xl:bottom-28 2xl:right-8 bottom-24 right-3 origin-right ${
         isExpanded ? 'w-[35vw] h-[85vh]' : 'w-[25vw] h-[65vh]'
@@ -46,25 +31,15 @@ const CustomPopup = ({ showPopup }) => {
             onDragEnd={dragEnd}
             style={{ right: `${positionX}px` }}
         >
-            {/* Pass the themeName prop to SheetsEditor */}
-            <SheetsEditor
-                themeName={themeName}
-                isFormatted={isFormatted}
-                onPrettifyFunctionReady={handlePrettify}
-            />
-
-            {/* Bottom Navbar */}
-            <InternalNavbar
-                darkMode={darkMode}
-                toggleDarkMode={() => setDarkMode(prevMode => !prevMode)}
-                onExpandToggle={handleExpandToggle}
-                isFormatted={isFormatted}
-                setIsFormatted={setIsFormatted}
-                isExpanded={isExpanded}
-                prettify={prettify}
-            />
+            <SheetsEditor themeName={themeName} />
+            <InternalNavbar onExpandToggle={handleExpandToggle} />
         </div>
     )
+
+    function handleExpandToggle() {
+        if (!isExpanded && Number(positionX) > ONE_THOUSAND) return
+        dispatch({ type: 'TOGGLE_EXPANDED' })
+    }
 
     function dragEnd(ev) {
         const { clientX } = ev
