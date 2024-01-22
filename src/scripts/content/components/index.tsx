@@ -1,10 +1,15 @@
-import React, { useEffect, useContext } from 'react'
+import React, {useRef, useEffect, useContext } from 'react'
 import FloatingBtn from './popup-module/FloatingBtn'
 import { ContentContext } from '../context'
 import { NOTION_URL } from '@/utils/constants'
 
 const RootComponent = () => {
-    const { dispatch } = useContext(ContentContext)
+    const { state, dispatch } = useContext(ContentContext)
+    const stateRef = useRef(null)
+
+    useEffect(() => {
+        stateRef.current = state
+    }, [state])
 
     useEffect(() => {
         const closeContextMenu = () => {
@@ -24,12 +29,16 @@ const RootComponent = () => {
             const keyCombos = {
                 Enter: e.key === 'Enter',
                 Backspace: e.key === 'Backspace',
+                ArrowUp: e.key === 'ArrowUp',
+                ArrowDown: e.key === 'ArrowDown',
+                ArrowLeft: e.key === 'ArrowLeft',
+                ArrowRight: e.key === 'ArrowRight',
+                'Ctrl+Z': e.ctrlKey && e.key === 'z',
+                'Cmd+Z': e.metaKey && e.key === 'z',
                 'Ctrl+X': e.ctrlKey && e.key === 'x',
                 'Cmd+X': e.metaKey && e.key === 'x',
                 'Ctrl+V': e.ctrlKey && e.key === 'v',
-                'Cmd+V': e.metaKey && e.key === 'v',
-                'Ctrl+Z': e.ctrlKey && e.key === 'z',
-                'Cmd+Z': e.metaKey && e.key === 'z'
+                'Cmd+V': e.metaKey && e.key === 'v'
             }
             for (const combo in keyCombos) {
                 if (keyCombos[combo]) {
@@ -40,18 +49,18 @@ const RootComponent = () => {
             }
         }
         document.addEventListener('keydown', handleGlobalKeyDown)
-        return () => window.removeEventListener('keydown', handleGlobalKeyDown)
+        return () => document.removeEventListener('keydown', handleGlobalKeyDown)
     }, [])
 
     useEffect(() => {
-        const handleCopy = event => {
-            const data = event.clipboardData.getData('Text')
+        const handleCopy = async e => {
+            let data = e.clipboardData.getData('Text')
+            if (!data) data = await navigator.clipboard.readText();
             dispatch({ type: 'SET_COPIED_DATA', payload: data })
         }
-
         window.addEventListener('copy', handleCopy)
         return () => window.removeEventListener('copy', handleCopy)
-    }, [])
+    }, [dispatch])
 
     return (
         <div className="z-[9999] fixed bottom-10 right-10 p-6 cursor-pointer opacity-[98%]">
