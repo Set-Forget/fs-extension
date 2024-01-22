@@ -83,13 +83,6 @@ const SheetsEditor = ({ themeName }) => {
                     completeSingle: false
                 }
             })
-        }
-    }, [])
-
-    useEffect(() => {
-        if (editorInstance?.current) return
-        if (window.CodeMirror && editorRef?.current) {
-            // Define a delayed autocomplete trigger function
             const delayAutoComplete = (cm, change) => {
                 clearTimeout(cm.autoCompleteTimer)
                 if (change.origin !== 'setValue') {
@@ -106,10 +99,19 @@ const SheetsEditor = ({ themeName }) => {
             }
 
             const handleKeyDown = (cm, e) => {
-                if (stateRef.current.url !== GOOGLE_URL) return
+                const isNotionOrGoogle = [NOTION_URL, GOOGLE_URL].includes(stateRef.current.url);
+                if (!isNotionOrGoogle) return
                 const isPasting = (e.ctrlKey || e.metaKey) && e.key === 'v'
-                if (!isPasting) return
-                if (stateRef.current.copiedData) cm.replaceSelection(stateRef.current.copiedData)
+                const isCutting = (e.ctrlKey || e.metaKey) && e.key === 'x'
+                if (isPasting && stateRef.current.copiedData) {
+                    cm.replaceSelection(stateRef.current.copiedData)
+                    return
+                }
+                if (isCutting && stateRef.current.url === NOTION_URL) { 
+                    const data = editorInstance.current.getValue()
+                    navigator.clipboard.writeText(data)
+                    cm.setValue('')
+                }
             }
 
             editorInstance.current.on('inputRead', delayAutoComplete)
@@ -132,7 +134,7 @@ const SheetsEditor = ({ themeName }) => {
                 ref={editorRef}
                 className="m max-w-[98%] h-full 2xl:p-2 p-1 relative cursor-default"
             >
-                <CopyButton copy={copyToClipboard} />
+                <CopyButton copy={() => copyToClipboard(stateRef.current)} />
                 {state.isFetching && (
                     <span className="flex justify-center m-2 text-sm text-blue-600 transition ease-in-out duration-150">
                         <LoadingIcon />
@@ -194,8 +196,7 @@ const SheetsEditor = ({ themeName }) => {
         })
         try {
             const completion = await openai.chat.completions.create({
-                messages: [
-                    {
+                messages: [{
                         role: 'user',
                         content: finalPrompt
                     }
@@ -218,21 +219,6 @@ const SheetsEditor = ({ themeName }) => {
                     { line: currentLine, ch: 0 },
                     { line: currentLine + 1, ch: 0 }
                 )
-            }
-            const insertTextTypewriterStyle = (text, position, index = 0, delay = 25) => {
-                if (index < text.length) {
-                    if (!position) return
-                    editor.replaceRange(text[index], position)
-                    let nextPosition = { ...position, ch: position.ch + 1 }
-                    if (text[index] === '\n') {
-                        nextPosition = { line: position.line + 1, ch: 0 }
-                    }
-                    setTimeout(() => {
-                        insertTextTypewriterStyle(text, nextPosition, index + 1, delay)
-                    }, delay)
-                } else {
-                    prettify(editor)
-                }
             }
             // add content with typewriter effect
             insertTextTypewriterStyle(cleanedResponse, startPosition)
@@ -264,6 +250,22 @@ const SheetsEditor = ({ themeName }) => {
         }
 
         return `Please create a ${platformName} formula with the following characteristics: ${promptText}. Only answer back with the code of a formula, and no additional text, because if my google extension app detects additional text, the app will break. If the formula cannot be created, please answer ${DEFAULT_ERROR_MESSAGE}`
+    }
+
+    function insertTextTypewriterStyle(text, position, index = 0, delay = 25) {
+        if (index < text.length) {
+            if (!position) return
+            editorInstance.current.replaceRange(text[index], position)
+            let nextPosition = { ...position, ch: position.ch + 1 }
+            if (text[index] === '\n') {
+                nextPosition = { line: position.line + 1, ch: 0 }
+            }
+            setTimeout(() => {
+                insertTextTypewriterStyle(text, nextPosition, index + 1, delay)
+            }, delay)
+        } else {
+            prettify(editorInstance.current)
+        }
     }
 
     function cleanGPTResponse(response) {
@@ -343,10 +345,11 @@ const SheetsEditor = ({ themeName }) => {
     }
 
     // copies content of editor to clipboard
-    function copyToClipboard() {
-        const { editorContent } = stateRef.current
-        if (!editorContent) return
-        navigator.clipboard.writeText(editorContent)
+    function copyToClipboard(_state) {
+        const data = _state.editorContent;
+        console.log(data);
+        if (!data) return
+        navigator.clipboard.writeText(data)
     }
 
     // determine which theme styles to apply

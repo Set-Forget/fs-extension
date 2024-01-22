@@ -1,25 +1,32 @@
 export const uglify = content => {
-    let uglifiedFunc = ''
-    let inString = false
+    let formattedFunc = '';
+    let inString = false;
+    let depth = 0;
 
     for (let i = 0; i < content.length; i++) {
-        const char = content[i]
-
-        // Handle string literals
+        const char = content[i];
         if (char === '"' && (i === 0 || content[i - 1] !== '\\')) {
-            inString = !inString
+            inString = !inString;
         }
-
         if (!inString) {
-            if (char !== '\n' && char !== '\t') {
-                uglifiedFunc += char
+            if (char === '(') {
+                depth++;
+            } else if (char === ')') {
+                depth--;
+                }
+            if (char === '?' && depth === 0) {
+                formattedFunc = formattedFunc.trimEnd() + '\n? ';
+            } else if (char === ':' && depth === 0) {
+                formattedFunc = formattedFunc.trimEnd() + '\n: ';
+            } else if (char !== '\n' && char !== '\t') {
+                formattedFunc += char;
             }
         } else {
-            uglifiedFunc += char
+            formattedFunc += char;
         }
     }
 
-    return uglifiedFunc
+    return formattedFunc;
 }
 
 export const formatFunction = content => {
