@@ -1,9 +1,7 @@
-export const copy = (editorInstance, state) => {
-    const { editorFormatContent, editorContent } = state
+export const copy = editorInstance => {
     const content = editorInstance.getSelection()
-    const isContentEqual = content === editorFormatContent
     navigator.clipboard
-        .writeText(isContentEqual ? editorContent : content)
+        .writeText(content)
         .then(() => console.log('Text copied to clipboard'))
         .catch(err => console.error('Failed to copy text: ', err))
 }

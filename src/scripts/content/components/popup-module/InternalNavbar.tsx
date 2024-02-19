@@ -16,14 +16,16 @@ const InternalNavbar = ({ onExpandToggle }) => {
                 <InfoModal show={showInfoModal} dm={dm} />
             </div>
 
-            <div className="space-x-8">
-                <button>
-                    <FormatterIcon darkMode={darkMode} addPrettify={addPrettify} />
+            <div className="space-x-4">
+                <button className="p-2" onClick={addPrettify}>
+                    <FormatterIcon darkMode={darkMode} />
                 </button>
 
-                <button onClick={handleClick}>{darkMode ? <SunIcon /> : <MoonIcon />}</button>
+                <button onClick={handleClick} className="p-2">
+                    {darkMode ? <SunIcon /> : <MoonIcon />}
+                </button>
 
-                <button onClick={onExpandToggle}>
+                <button onClick={onExpandToggle} className="p-2">
                     {!isExpanded ? (
                         <ExpandIcon darkMode={darkMode} />
                     ) : (

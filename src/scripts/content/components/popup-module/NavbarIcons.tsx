@@ -11,9 +11,8 @@ export const HelpIcon = ({ darkMode }) => (
     </svg>
 )
 
-export const FormatterIcon = ({ darkMode, addPrettify }) => (
+export const FormatterIcon = ({ darkMode }) => (
     <svg
-        onClick={addPrettify}
         xmlns="http://www.w3.org/2000/svg"
         height="1.2em"
         width="1.2em"
@@ -29,7 +28,6 @@ export const SunIcon = () => (
         aria-hidden="true"
         focusable="false"
         height="1.2em"
-        role="presentation"
         viewBox="0 0 24 24"
         width="1.2em"
     >
@@ -45,7 +43,6 @@ export const MoonIcon = () => (
         aria-hidden="true"
         focusable="false"
         height="1.2em"
-        role="presentation"
         viewBox="0 0 24 24"
         width="1.2em"
     >

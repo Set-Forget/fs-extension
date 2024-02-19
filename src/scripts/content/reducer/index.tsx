@@ -14,10 +14,6 @@ export const contentReducer = (state, action) => {
             return { ...state, isFormatted: action.payload }
         case 'SET_FETCHING':
             return { ...state, isFetching: action.payload }
-        case 'SET_EDITOR_CONTENT':
-            return { ...state, editorContent: action.payload }
-        case 'SET_EDITOR_FORMAT_CONTENT':
-            return { ...state, editorFormatContent: action.payload }
         case 'SET_PRETTIFY':
             return { ...state, prettify: action.payload }
         case 'SET_COPIED_DATA':
@@ -34,11 +30,11 @@ export const contentReducer = (state, action) => {
                 ...state,
                 contextMenu: { ...state.contextMenu, toggled: action.payload }
             }
+        case 'SET_IS_EDITOR_FOCUSED':
+            return { ...state, isEditorFocused: action.payload }
         case 'RESET_EDITOR_STATE':
             return {
                 ...state,
-                editorContent: '',
-                editorFormatContent: '',
                 isFormatted: false
             }
         default:

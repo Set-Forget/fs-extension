@@ -8,3 +8,4 @@ export const FETCH_ERROR_MESSAGE = 'An error occurred while getting the formula'
 export const DEFAULT_ERROR_MESSAGE = 'Formula could not be created' as const
 export const ONE_HUNDRED = 100 as const
 export const ONE_THOUSAND = 1000 as const
+export const API_KEY = String(import.meta.env.VITE_GPTKEY)

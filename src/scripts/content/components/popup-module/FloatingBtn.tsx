@@ -30,7 +30,7 @@ const FloatingBtn: React.FC = () => {
                 onMouseLeave={handleMouseLeave}
                 className="flex items-center"
             >
-                <div onClick={handleTooglePopUp} className={buttonClasses}>
+                <button onClick={handleTogglePopUp} className={buttonClasses}>
                     <p
                         style={{
                             transition: isHovered ? 'opacity 500ms 300ms' : 'opacity 200ms'
@@ -60,7 +60,7 @@ const FloatingBtn: React.FC = () => {
                     >
                         {'{ }'}
                     </p>
-                </div>
+                </button>
             </div>
             <CustomPopup/>
         </div>
@@ -74,7 +74,7 @@ const FloatingBtn: React.FC = () => {
         dispatch({ type: 'SET_HOVERED', payload: false })
     }
 
-    function handleTooglePopUp() {
+    function handleTogglePopUp() {
         dispatch({ type: 'TOGGLE_POPUP' })
     }
 }
