@@ -1,34 +1,3 @@
-export const uglify = content => {
-    let formattedFunc = '';
-    let inString = false;
-    let depth = 0;
-
-    for (let i = 0; i < content.length; i++) {
-        const char = content[i];
-        if (char === '"' && (i === 0 || content[i - 1] !== '\\')) {
-            inString = !inString;
-        }
-        if (!inString) {
-            if (char === '(') {
-                depth++;
-            } else if (char === ')') {
-                depth--;
-                }
-            if (char === '?' && depth === 0) {
-                formattedFunc = formattedFunc.trimEnd() + '\n? ';
-            } else if (char === ':' && depth === 0) {
-                formattedFunc = formattedFunc.trimEnd() + '\n: ';
-            } else if (char !== '\n' && char !== '\t') {
-                formattedFunc += char;
-            }
-        } else {
-            formattedFunc += char;
-        }
-    }
-
-    return formattedFunc;
-}
-
 export const formatFunction = content => {
     let indentLevel = 0
     let formattedFunc = ''
@@ -60,4 +29,9 @@ export const formatFunction = content => {
     }
 
     return formattedFunc
+}
+
+export const removeFormat = formattedContent => {
+    const regex = /\s*(\(|\))\s*/g;
+    return formattedContent.replace(regex, '$1');
 }

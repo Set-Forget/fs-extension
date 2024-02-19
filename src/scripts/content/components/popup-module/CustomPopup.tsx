@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { ContentContext } from '../../context'
 import InternalNavbar from './InternalNavbar'
 import SheetsEditor from '../editor-module/SheetsEditor'
-import { EXCEL_URL, ONE_HUNDRED, ONE_THOUSAND } from '@/utils/constants'
+import { EXCEL_URL, ONE_THOUSAND } from '@/utils/constants'
 
 const CustomPopup = () => {
     const { state, dispatch } = useContext(ContentContext)
@@ -42,15 +42,14 @@ const CustomPopup = () => {
     }
 
     function dragEnd(ev) {
-        const { clientX } = ev
-        if (clientX < ONE_HUNDRED && !isExpanded) {
-            setPositionX('1100')
-        } else if (clientX > ONE_HUNDRED && clientX < ONE_THOUSAND) {
-            setPositionX('600')
-        } else if (clientX > ONE_THOUSAND) {
-            setPositionX('12')
-        }
-        ev.dataTransfer.setData('text', ev.target.id)
+        const clientX = ev.clientX
+        const windowWidth = window.innerWidth
+        const componentWidth = isExpanded ? 530 : 378
+        const newPositionX = Math.min(
+            Math.max(windowWidth - clientX, 0),
+            windowWidth - componentWidth
+        )
+        setPositionX(`${newPositionX}`)
     }
 }
 

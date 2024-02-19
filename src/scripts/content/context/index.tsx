@@ -8,14 +8,13 @@ type ContentState = {
     isExpanded: boolean
     darkMode: boolean
     isFormatted: boolean
-    editorContent: string
-    editorFormatContent: string
     isFetching: boolean
     copiedData: string
     contextMenu: {
         position: { x: number; y: number }
         toggled: boolean
     }
+    isEditorFocused: boolean,
     errorMessage: string
     prettify: () => void
 }
@@ -33,8 +32,7 @@ const initialState = {
     darkMode: false,
     isFormatted: false,
     isFetching: false,
-    editorContent: '',
-    editorFormatContent: '',
+    isEditorFocused: false,
     copiedData: '',
     errorMessage: '',
     contextMenu: {
@@ -51,6 +49,7 @@ export const ContentContext = createContext<ContentContextType>({
 
 export const ContentProvider = ({ children }) => {
     const [state, dispatch] = useReducer(contentReducer, initialState)
+
     const contextValue = useMemo(() => ({ state, dispatch }), [state])
 
     return <ContentContext.Provider value={contextValue}>{children}</ContentContext.Provider>

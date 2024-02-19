@@ -1,16 +1,16 @@
-import React, { useEffect, useRef, useState, useContext } from 'react'
+import React, { useEffect, useRef, useContext } from 'react'
 import { ContentContext } from '../../context'
 import spreadsheetsHint from './SpreadsheetsHint'
 import CopyButton from './CopyButton'
 import '@/lib/codemirror-5.65.15/lib/codemirror.js'
 import '@/lib/codemirror-5.65.15/mode/spreadsheet/spreadsheet.js'
 
-import monokaiThemeStyles from '../../../../lib/codemirror-5.65.15/theme/midnight.css?inline'
-import paraisoLightStyles from '../../../../lib/codemirror-5.65.15/theme/isotope.css?inline'
+import monokaiThemeStyles from '@/lib/codemirror-5.65.15/theme/midnight.css?inline'
+import paraisoLightStyles from '@/lib/codemirror-5.65.15/theme/isotope.css?inline'
 
 import '@/lib/codemirror-5.65.15/addon/hint/show-hint.js'
 import '@/lib/codemirror-5.65.15/addon/hint/anyword-hint.js'
-import showHintStyles from '../../../../lib/codemirror-5.65.15/addon/hint/show-hint.css?inline'
+import showHintStyles from '@/lib/codemirror-5.65.15/addon/hint/show-hint.css?inline'
 import '@/lib/codemirror-5.65.15/addon/edit/closebrackets.js'
 import '@/lib/codemirror-5.65.15/addon/edit/matchbrackets.js'
 import '@/lib/codemirror-5.65.15/addon/selection/active-line.js'
@@ -18,7 +18,7 @@ import '@/lib/codemirror-5.65.15/addon/selection/active-line.js'
 import ContextMenu from './ContextMenu'
 import { copy, paste } from './contextMenuFuncs'
 import { CopyIcon, PasteIcon, CloseIcon, LoadingIcon } from './contextMenuIcons'
-import { uglify, formatFunction } from './formatFuncs'
+import { formatFunction, removeFormat } from './formatFuncs'
 import {
     DEFAULT_ERROR_MESSAGE,
     EXCEL,
@@ -27,11 +27,10 @@ import {
     GOOGLE,
     GOOGLE_URL,
     NOTION,
-    NOTION_URL
+    NOTION_URL,
+    API_KEY
 } from '@/utils/constants'
-import { OpenAI } from '../../../../lib/openai/bundled_openai.js'
-
-export const apiKey = String(import.meta.env.VITE_GPTKEY)
+import { OpenAI } from '@/lib/openai/bundled_openai.js'
 
 window.CodeMirror.registerHelper('hint', 'spreadsheet', spreadsheetsHint)
 
@@ -43,18 +42,24 @@ const SheetsEditor = ({ themeName }) => {
     const contextMenuRef = useRef(null)
 
     useEffect(() => {
-        if (!editorInstance?.current) return
-        dispatch({ type: 'SET_PRETTIFY', payload: () => prettify(editorInstance.current) })
-    }, [editorInstance.current])
-
-    useEffect(() => {
         stateRef.current = state
     }, [state])
 
     useEffect(() => {
         if (!editorInstance?.current) return
+        dispatch({ type: 'SET_PRETTIFY', payload: () => prettify(editorInstance.current) })
+        dispatch({ type: 'SET_IS_EDITOR_FOCUSED', payload: editorInstance.current.hasFocus() })
+    }, [editorInstance.current])
+
+    useEffect(() => {
+        if (!editorInstance?.current) return
         editorInstance.current.setOption('theme', themeName)
     }, [themeName])
+
+    useEffect(() => {
+        if (!editorInstance?.current || !state.showPopup) return
+        editorInstance.current.focus()
+    }, [editorInstance?.current, state.showPopup])
 
     // Initialize CodeMirror instance
     useEffect(() => {
@@ -99,7 +104,7 @@ const SheetsEditor = ({ themeName }) => {
             }
 
             const handleKeyDown = (cm, e) => {
-                const isNotionOrGoogle = [NOTION_URL, GOOGLE_URL].includes(stateRef.current.url);
+                const isNotionOrGoogle = [NOTION_URL, GOOGLE_URL].includes(stateRef.current.url)
                 if (!isNotionOrGoogle) return
                 const isPasting = (e.ctrlKey || e.metaKey) && e.key === 'v'
                 const isCutting = (e.ctrlKey || e.metaKey) && e.key === 'x'
@@ -107,7 +112,7 @@ const SheetsEditor = ({ themeName }) => {
                     cm.replaceSelection(stateRef.current.copiedData)
                     return
                 }
-                if (isCutting && stateRef.current.url === NOTION_URL) { 
+                if (isCutting && stateRef.current.url === NOTION_URL) {
                     const data = editorInstance.current.getValue()
                     navigator.clipboard.writeText(data)
                     cm.setValue('')
@@ -133,8 +138,9 @@ const SheetsEditor = ({ themeName }) => {
             <div
                 ref={editorRef}
                 className="m max-w-[98%] h-full 2xl:p-2 p-1 relative cursor-default"
+                onClick={handleClickEditor}
             >
-                <CopyButton copy={() => copyToClipboard(stateRef.current)} />
+                <CopyButton copy={() => copyToClipboard(editorInstance.current)} />
                 {state.isFetching && (
                     <span className="flex justify-center m-2 text-sm text-blue-600 transition ease-in-out duration-150">
                         <LoadingIcon />
@@ -153,7 +159,7 @@ const SheetsEditor = ({ themeName }) => {
                         {
                             text: 'Copy',
                             icon: <CopyIcon />,
-                            onClick: () => copy(editorInstance.current, stateRef.current),
+                            onClick: () => copy(editorInstance.current),
                             isSpacer: false
                         },
                         {
@@ -182,6 +188,11 @@ const SheetsEditor = ({ themeName }) => {
         </div>
     )
 
+    function handleClickEditor() {
+        if (stateRef.current.isEditorFocused) return;
+        dispatch({ type: 'SET_IS_EDITOR_FOCUSED', payload: true })
+    }
+
     async function handleShiftEnter(editor) {
         const { isFetching: fetching } = stateRef.current
         if (fetching) return
@@ -191,12 +202,13 @@ const SheetsEditor = ({ themeName }) => {
         const promptText = editor.getLine(currentLine)
         const finalPrompt = getPrompt(promptText)
         const openai = new OpenAI({
-            apiKey,
+            apiKey: API_KEY,
             dangerouslyAllowBrowser: true
         })
         try {
             const completion = await openai.chat.completions.create({
-                messages: [{
+                messages: [
+                    {
                         role: 'user',
                         content: finalPrompt
                     }
@@ -310,17 +322,16 @@ const SheetsEditor = ({ themeName }) => {
     // format code
     function prettify(cm) {
         if (!cm) return
-        const { editorContent, isFormatted, url } = stateRef.current
-        const IS_GOOGLE_OR_EXCEL = url === GOOGLE_URL || url === EXCEL_URL
+        const { isFormatted } = stateRef.current
         const content = cm.getValue()
-        if (!isFormatted) dispatch({ type: 'SET_EDITOR_CONTENT', payload: content })
-        if (isFormatted && editorContent) {
-            cm.setValue(editorContent)
+        if (!content) return
+        if (isFormatted) {
+            const unformatted = removeFormat(content)
             dispatch({ type: 'SET_FORMATTED', payload: false })
+            cm.setValue(unformatted)
         } else {
-            const formatted = IS_GOOGLE_OR_EXCEL ? formatFunction(content) : uglify(content)
+            const formatted = formatFunction(content)
             dispatch({ type: 'SET_FORMATTED', payload: true })
-            dispatch({ type: 'SET_EDITOR_FORMAT_CONTENT', payload: formatted })
             cm.setValue(formatted)
         }
     }
@@ -345,9 +356,8 @@ const SheetsEditor = ({ themeName }) => {
     }
 
     // copies content of editor to clipboard
-    function copyToClipboard(_state) {
-        const data = _state.editorContent;
-        console.log(data);
+    function copyToClipboard(editor) {
+        const data = editor.getValue()
         if (!data) return
         navigator.clipboard.writeText(data)
     }

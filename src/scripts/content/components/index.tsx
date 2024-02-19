@@ -1,15 +1,10 @@
-import React, {useRef, useEffect, useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 import FloatingBtn from './popup-module/FloatingBtn'
 import { ContentContext } from '../context'
 import { NOTION_URL } from '@/utils/constants'
 
 const RootComponent = () => {
-    const { state, dispatch } = useContext(ContentContext)
-    const stateRef = useRef(null)
-
-    useEffect(() => {
-        stateRef.current = state
-    }, [state])
+    const { dispatch } = useContext(ContentContext)
 
     useEffect(() => {
         const closeContextMenu = () => {
@@ -55,7 +50,7 @@ const RootComponent = () => {
     useEffect(() => {
         const handleCopy = async e => {
             let data = e.clipboardData.getData('Text')
-            if (!data) data = await navigator.clipboard.readText();
+            if (!data) data = await navigator.clipboard.readText()
             dispatch({ type: 'SET_COPIED_DATA', payload: data })
         }
         window.addEventListener('copy', handleCopy)
