@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import '../../lib/codemirror-5.65.15/lib/codemirror.css'
+import '@/lib/codemirror-5.65.15/lib/codemirror.css'
 import { ContentProvider } from './context'
 import { EXCEL_URL, GOOGLE_URL, NOTION_URL } from '@/utils/constants'
 import RootComponent from './components'
