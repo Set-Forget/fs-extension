@@ -110,13 +110,15 @@ const SheetsEditor = ({ themeName }) => {
                 const isCutting = (e.ctrlKey || e.metaKey) && e.key === 'x'
                 if (isPasting && stateRef.current.copiedData) {
                     cm.replaceSelection(stateRef.current.copiedData)
+                    e.stopPropagation()
+                    e.preventDefault()
                     return
                 }
                 if (isCutting && stateRef.current.url === NOTION_URL) {
                     const data = editorInstance.current.getValue()
                     navigator.clipboard.writeText(data)
                     cm.setValue('')
-                }
+                } 
             }
 
             editorInstance.current.on('inputRead', delayAutoComplete)
@@ -137,7 +139,7 @@ const SheetsEditor = ({ themeName }) => {
         <div className="w-full h-full relative" onContextMenu={handleContextMenu}>
             <div
                 ref={editorRef}
-                className="m max-w-[98%] h-full 2xl:p-2 p-1 relative cursor-default"
+                className="codeMirror max-w-[98%] h-full 2xl:p-2 p-1 relative cursor-default"
                 onClick={handleClickEditor}
             >
                 <CopyButton copy={() => copyToClipboard(editorInstance.current)} />
@@ -189,7 +191,7 @@ const SheetsEditor = ({ themeName }) => {
     )
 
     function handleClickEditor() {
-        if (stateRef.current.isEditorFocused) return;
+        if (stateRef.current.isEditorFocused) return
         dispatch({ type: 'SET_IS_EDITOR_FOCUSED', payload: true })
     }
 
