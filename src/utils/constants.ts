@@ -1,3 +1,5 @@
+export const API_URL =
+  "https://script.google.com/macros/s/AKfycbzbQcgKfFj7dBSjj_LKk5wMtIJqKGjzSK5wP323o-LmtSyeQ1a7OZEbSi4Y1dxW7dg4/exec" as const;
 export const GOOGLE = 'Google Sheets' as const
 export const GOOGLE_URL = 'docs.google.com' as const
 export const EXCEL = 'Excel Online' as const

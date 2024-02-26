@@ -2,6 +2,7 @@ import React, { useEffect, useContext } from 'react'
 import FloatingBtn from './popup-module/FloatingBtn'
 import { ContentContext } from '../context'
 import { NOTION_URL } from '@/utils/constants'
+import { UserContext } from '../context/user'
 
 const RootComponent = () => {
     const { dispatch } = useContext(ContentContext)
