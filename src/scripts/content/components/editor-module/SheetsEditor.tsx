@@ -16,7 +16,7 @@ import '@/lib/codemirror-5.65.15/addon/edit/matchbrackets.js'
 import '@/lib/codemirror-5.65.15/addon/selection/active-line.js'
 
 import ContextMenu from './ContextMenu'
-import { copy, paste } from './contextMenuFuncs'
+import { paste } from './contextMenuFuncs'
 import { CopyIcon, PasteIcon, CloseIcon, LoadingIcon } from './contextMenuIcons'
 import { formatFunction, removeFormat } from './formatFuncs'
 import {
@@ -161,7 +161,7 @@ const SheetsEditor = ({ themeName }) => {
                         {
                             text: 'Copy',
                             icon: <CopyIcon />,
-                            onClick: () => copy(editorInstance.current),
+                            onClick: () => copyToClipboard(editorInstance.current),
                             isSpacer: false
                         },
                         {
@@ -361,7 +361,8 @@ const SheetsEditor = ({ themeName }) => {
     function copyToClipboard(editor) {
         const data = editor.getValue()
         if (!data) return
-        navigator.clipboard.writeText(data)
+        const formatData = removeFormat(data)
+        navigator.clipboard.writeText(formatData)
     }
 
     // determine which theme styles to apply

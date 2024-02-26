@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { ContentContext } from '../../context'
+import { UserContext } from '../../context/user'
 import InternalNavbar from './InternalNavbar'
 import SheetsEditor from '../editor-module/SheetsEditor'
 import { EXCEL_URL, ONE_THOUSAND } from '@/utils/constants'
+import Login from '../login-module/login'
 
 const CustomPopup = () => {
     const { state, dispatch } = useContext(ContentContext)
+    const { user } = useContext(UserContext)
+
     const { showPopup, url, darkMode, isExpanded } = state
     const [positionX, setPositionX] = useState<string>('')
 
@@ -31,8 +35,14 @@ const CustomPopup = () => {
             onDragEnd={dragEnd}
             style={{ right: `${positionX}px` }}
         >
-            <SheetsEditor themeName={themeName} />
-            <InternalNavbar onExpandToggle={handleExpandToggle} />
+            {user ? (
+                <>
+                    <SheetsEditor themeName={themeName} />
+                    <InternalNavbar onExpandToggle={handleExpandToggle} />
+                </>
+            ) : (
+                <Login />
+            )}
         </div>
     )
 

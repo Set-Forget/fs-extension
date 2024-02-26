@@ -3,6 +3,7 @@ import '@/lib/codemirror-5.65.15/lib/codemirror.css'
 import { ContentProvider } from './context'
 import { EXCEL_URL, GOOGLE_URL, NOTION_URL } from '@/utils/constants'
 import RootComponent from './components'
+import { UserProvider } from './context/user'
 
 const App = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -30,7 +31,11 @@ const App = () => {
         })
     }, [])
 
-    return <ContentProvider>{isOpen && <RootComponent />}</ContentProvider>
+    return (
+        <ContentProvider>
+            <UserProvider>{isOpen && <RootComponent />}</UserProvider>
+        </ContentProvider>
+    )
 }
 
 export default App
