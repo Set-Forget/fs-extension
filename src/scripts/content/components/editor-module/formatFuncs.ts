@@ -32,6 +32,8 @@ export const formatFunction = content => {
 }
 
 export const removeFormat = formattedContent => {
-    const regex = /\s*(\(|\))\s*/g;
-    return formattedContent.replace(regex, '$1');
+    const regex = /\s*(,\s*[\n\r]?|\s*[\n\r]?\s*(\(|\)))/g
+    let result = formattedContent.replace(regex, match => match.trim())
+    result = result.replace(/(\(\s{0,})/g, '(')
+    return result
 }

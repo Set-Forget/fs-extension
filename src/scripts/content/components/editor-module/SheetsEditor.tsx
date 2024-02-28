@@ -114,11 +114,19 @@ const SheetsEditor = ({ themeName }) => {
                     e.preventDefault()
                     return
                 }
-                if (isCutting && stateRef.current.url === NOTION_URL) {
+                if (isCutting) {
                     const data = editorInstance.current.getValue()
                     navigator.clipboard.writeText(data)
                     cm.setValue('')
-                } 
+                    return
+                }
+                if (stateRef.current.url === GOOGLE_URL) {
+                    const isUndoing = (e.ctrlKey || e.metaKey) && e.key === 'z'
+                    const isForwarding = (e.ctrlKey || e.metaKey) && e.key === 'y'
+                    if (isUndoing || isForwarding) {
+                        e.stopPropagation()
+                    }
+                }
             }
 
             editorInstance.current.on('inputRead', delayAutoComplete)
