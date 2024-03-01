@@ -1,7 +1,5 @@
 //@ts-nocheck
 import React, { useEffect, useState } from 'react'
-import { GoogleOAuthProvider } from '@react-oauth/google'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import '@/lib/codemirror-5.65.15/lib/codemirror.css'
 import { ContentProvider } from './context'
 import { EXCEL_URL, GOOGLE_URL, NOTION_URL } from '@/utils/constants'
@@ -36,15 +34,9 @@ const App = () => {
     }, [])
 
     return (
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID} scopes={['email']}>
-            <React.StrictMode>
-                <QueryClientProvider client={queryClient}>
-                    <ContentProvider>
-                        <UserProvider>{isOpen && <RootComponent />}</UserProvider>
-                    </ContentProvider>
-                </QueryClientProvider>
-            </React.StrictMode>
-        </GoogleOAuthProvider>
+        <ContentProvider>
+            <UserProvider>{isOpen && <RootComponent />}</UserProvider>
+        </ContentProvider>
     )
 }
 

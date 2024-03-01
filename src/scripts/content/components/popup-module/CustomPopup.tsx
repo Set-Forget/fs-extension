@@ -9,7 +9,7 @@ import Login from '../login-module/login'
 const CustomPopup = () => {
     const { state, dispatch } = useContext(ContentContext)
     const { user } = useContext(UserContext)
-    
+
     const { showPopup, url, darkMode, isExpanded } = state
     const [positionX, setPositionX] = useState<string>('')
 
@@ -35,14 +35,8 @@ const CustomPopup = () => {
             onDragEnd={dragEnd}
             style={{ right: `${positionX}px` }}
         >
-            {user?.email ? (
-                <>
-                    <SheetsEditor themeName={themeName} />
-                    <InternalNavbar onExpandToggle={handleExpandToggle} />
-                </>
-            ) : (
-                <Login />
-            )}
+            <SheetsEditor themeName={themeName} />
+            <InternalNavbar onExpandToggle={handleExpandToggle} />
         </div>
     )
 
