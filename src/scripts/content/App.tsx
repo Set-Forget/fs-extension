@@ -6,8 +6,6 @@ import { EXCEL_URL, GOOGLE_URL, NOTION_URL } from '@/utils/constants'
 import RootComponent from './components'
 import { UserProvider } from './context/user'
 
-const queryClient = new QueryClient()
-
 const App = () => {
     const [isOpen, setIsOpen] = useState(false)
     useEffect(() => {
