@@ -15,8 +15,8 @@ type UserContextType = {
 }
 
 const initialState = {
-    email: "",
-    id: "",
+    email: '',
+    id: '',
     userIdExists: false,
     isRegistering: false
 }
@@ -28,10 +28,9 @@ export const UserContext = createContext<UserContextType>({
 
 export const UserProvider = ({ children }) => {
     const [state, dispatch] = useReducer(userReducer, initialState)
-
     const checkUser = useCallback(async () => {
-        if (!state.user?.id) return
-        const url = `${API_URL}?action=getUserById&userId=${state.user.id}`
+        if (!state.id) return
+        const url = `${API_URL}?action=getUserById&userId=${state.id}`
         try {
             const response = await fetch(url, {
                 redirect: 'follow',
@@ -44,17 +43,17 @@ export const UserProvider = ({ children }) => {
         } catch (error) {
             console.error(error)
         }
-    }, [state.user?.id])
+    }, [state.id])
 
     useEffect(() => {
         const fetchCheckUser = async () => {
             const value = await checkUser()
             if (!value) return
             const { userIdExists } = value
-            //setUser({...state.user, userIdExists})
+            dispatch({ type: 'SET_ID_EXIST', payload: userIdExists })
         }
         fetchCheckUser()
-    }, [state.user?.id, checkUser])
+    }, [checkUser])
 
     const contextValue = useMemo(() => ({ state, dispatch }), [state])
 
