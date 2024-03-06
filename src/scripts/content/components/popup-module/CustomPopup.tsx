@@ -8,10 +8,11 @@ import Login from '../login-module/login'
 
 const CustomPopup = () => {
     const { state, dispatch } = useContext(ContentContext)
-    const { user } = useContext(UserContext)
+    const { state: stateUser } = useContext(UserContext)
 
     const { showPopup, url, darkMode, isExpanded } = state
     const [positionX, setPositionX] = useState<string>('')
+    const [showEditor, setShowEditor] = useState<boolean>(false)
 
     // Determine the theme name based on darkMode
     const themeName = darkMode ? 'midnight' : 'isotope'
@@ -21,6 +22,11 @@ const CustomPopup = () => {
         document.body.classList.remove('dark', 'light')
         document.body.classList.add(themeClass)
     }, [darkMode])
+    
+
+    useEffect(() => {
+        setShowEditor(Boolean(stateUser?.userIdExists))
+    }, [stateUser])
 
     const className = `fixed 2xl:bottom-28 2xl:right-8 bottom-24 right-3 origin-right ${
         isExpanded ? 'w-[35vw] h-[85vh]' : 'w-[25vw] h-[65vh]'
@@ -35,8 +41,14 @@ const CustomPopup = () => {
             onDragEnd={dragEnd}
             style={{ right: `${positionX}px` }}
         >
-            <SheetsEditor themeName={themeName} />
-            <InternalNavbar onExpandToggle={handleExpandToggle} />
+            {showEditor ? (
+                <>
+                    <SheetsEditor themeName={themeName} />
+                    <InternalNavbar onExpandToggle={handleExpandToggle} />
+                </>
+            ) : (
+                <Login />
+            )}
         </div>
     )
 

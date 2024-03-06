@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { useEffect, useState } from 'react'
 import '@/lib/codemirror-5.65.15/lib/codemirror.css'
 import { ContentProvider } from './context'
@@ -8,6 +7,7 @@ import { UserProvider } from './context/user'
 
 const App = () => {
     const [isOpen, setIsOpen] = useState(false)
+
     useEffect(() => {
         console.log('Formula Studio: Loaded')
 

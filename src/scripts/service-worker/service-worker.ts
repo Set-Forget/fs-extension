@@ -13,9 +13,14 @@ chrome.action.onClicked.addListener(() => {
     })
 })
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
     const { command } = message
     switch (command) {
+        case 'getUserInfo':
+            chrome.identity.getProfileUserInfo(userInfo => {
+                sendResponse({ userInfo })
+            })
+            return true
         case 'hello-world':
             console.log('Hello World, from the Background Service Worker')
             sendResponse({ success: true, message: 'Hello World' })
