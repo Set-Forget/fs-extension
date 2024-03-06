@@ -62,7 +62,7 @@ const createBaseManifest = async (): Promise<Manifest> => {
             },
             background: {
                 service_worker: 'js/service-worker.js',
-                type: 'module'
+                type: 'module',
             },
             icons: {
                 16: './assets/icon-16.png',
@@ -70,7 +70,9 @@ const createBaseManifest = async (): Promise<Manifest> => {
                 128: './assets/icon-128.png'
             },
             permissions: [
-                "tabs"
+                "tabs",
+                "identity",
+                "identity.email"
             ],
             content_scripts: [
                 {

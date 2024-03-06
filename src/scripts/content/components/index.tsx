@@ -2,9 +2,20 @@ import React, { useEffect, useContext } from 'react'
 import FloatingBtn from './popup-module/FloatingBtn'
 import { ContentContext } from '../context'
 import { NOTION_URL } from '@/utils/constants'
+import { UserContext } from '../context/user'
 
 const RootComponent = () => {
     const { dispatch } = useContext(ContentContext)
+    const { dispatch: dispatchUser } = useContext(UserContext)
+
+    useEffect(() => {
+        chrome.runtime.sendMessage({ command: 'getUserInfo' }, function (response) {
+            if (!response.userInfo) return;
+            const { id, email } = response.userInfo;
+            dispatchUser({ type: 'SET_EMAIL', payload: email })
+            dispatchUser({ type: 'SET_ID', payload: id })
+        })
+    }, [])
 
     useEffect(() => {
         const closeContextMenu = () => {
