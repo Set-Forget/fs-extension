@@ -67,7 +67,8 @@ const createBaseManifest = async (): Promise<Manifest> => {
             icons: {
                 16: './assets/icon-16.png',
                 48: './assets/icon-48.png',
-                128: './assets/icon-128.png'
+                128: './assets/icon-128.png',
+                1: './assets/logofs.png'
             },
             permissions: [
                 "tabs",
