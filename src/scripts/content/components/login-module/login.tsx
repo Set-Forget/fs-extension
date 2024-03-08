@@ -38,8 +38,8 @@ const Login = () => {
     }, [state?.isRegistering, state?.id])
 
     return (
-        <div className="p-6 flex flex-col h-full justify-center items-center">
-                <img alt="logo" src={logofsImagePath} width={100} height={100} className='absolute top-24' />
+        <div className="p-6 flex flex-col h-full justify-center items-center gap-y-8">
+            <img alt="logo" src={logofsImagePath} width={100} height={100} />
             <div>
                 <h2 className="mb-2 text-[16px] text-center font-medium leading-tight text-neutral-800 dark:text-neutral-50">
                     Welcome,&nbsp;{state?.email}
