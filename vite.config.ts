@@ -9,10 +9,6 @@ import * as path from 'path'
 
 // Define rollup input
 const rollupInput = getRollupInput([
-    './src/scripts/options/index.tsx',
-    './src/scripts/options/options.html',
-    './src/scripts/popup/index.tsx',
-    './src/scripts/popup/popup.html',
     './src/scripts/onInstalled/index.tsx',
     './src/scripts/onInstalled/onInstalled.html',
     './src/scripts/service-worker/service-worker.ts',
@@ -26,8 +22,8 @@ function getRollupInput(files) {
 }
 
 const outputOptions = {
-    entryFileNames: info => 'js/[name].js',
-    assetFileNames: info => 'assets/[ext]/[name].[ext]'
+    entryFileNames: _ => 'js/[name].js',
+    assetFileNames: _ => 'assets/[ext]/[name].[ext]'
 }
 
 console.log(' ---> Starting Vite Build 🤞 <---')

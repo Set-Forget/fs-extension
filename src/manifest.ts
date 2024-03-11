@@ -6,10 +6,10 @@ interface Manifest {
     name: string
     version: string
     description: string
-    action: {
+    action?: {
         default_popup: string
     }
-    options_ui: {
+    options_ui?: {
         page: string
         open_in_tab: boolean
     }
@@ -20,8 +20,7 @@ interface Manifest {
     icons: {
         [key: number]: string
     }
-    permissions: string[
-    ]
+    permissions: string[]
     content_scripts: Array<{
         matches: string[]
         js: string[]
@@ -50,35 +49,25 @@ const createBaseManifest = async (): Promise<Manifest> => {
 
         return {
             manifest_version: 3,
-            name: pkg.longName ?? pkg.name ?? 'Formula Studio',
+            name: 'Formula Studio',
             version: pkg.version,
-            description: pkg.description ?? 'Formula Studio IDE',
-            action: {
-                default_popup: './src/scripts/popup/popup.html'
-            },
-            options_ui: {
-                page: './src/scripts/options/options.html',
-                open_in_tab: true
-            },
+            description:
+                'Create and edit formulas seamlessly with chat GPT. Supported on Google Sheets, Excel Online and Notion',
             background: {
                 service_worker: 'js/service-worker.js',
-                type: 'module',
+                type: 'module'
             },
             icons: {
-                16: './assets/icon-16.png',
-                48: './assets/icon-48.png',
-                128: './assets/icon-128.png',
                 1: './assets/logofs.png'
             },
-            permissions: [
-                "tabs",
-                "identity",
-                "identity.email"
-            ],
+            permissions: ['tabs', 'identity', 'identity.email'],
             content_scripts: [
                 {
-                    // matches: ['<all_urls>'],
-                    "matches": ["*://docs.google.com/spreadsheets/*", "*://www.notion.so/*", "*://onedrive.live.com/*"],
+                    matches: [
+                        '*://docs.google.com/spreadsheets/*',
+                        '*://www.notion.so/*',
+                        '*://onedrive.live.com/*'
+                    ],
                     js: ['./js/content.js']
                 }
             ],
