@@ -49,7 +49,7 @@ const createBaseManifest = async (): Promise<Manifest> => {
 
         return {
             manifest_version: 3,
-            name: 'Formula Studio',
+            name: 'The Formula Button',
             version: pkg.version,
             description:
                 'Create and edit formulas seamlessly with chat GPT. Supported on Google Sheets, Excel Online and Notion',
@@ -60,7 +60,7 @@ const createBaseManifest = async (): Promise<Manifest> => {
             icons: {
                 1: './assets/logofs.png'
             },
-            permissions: ['tabs', 'identity', 'identity.email'],
+            permissions: ['identity', 'identity.email'],
             content_scripts: [
                 {
                     matches: [
