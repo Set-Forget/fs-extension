@@ -34,6 +34,7 @@ const RootComponent = () => {
             if (!isEditor) return
             const keyCombos = {
                 Enter: e.key === 'Enter',
+                Space: e.key === ' ',
                 Backspace: e.key === 'Backspace',
                 ArrowUp: e.key === 'ArrowUp',
                 ArrowDown: e.key === 'ArrowDown',

@@ -108,8 +108,26 @@ const SheetsEditor = ({ themeName }) => {
                 if (!isNotionOrGoogle) return
                 const isPasting = (e.ctrlKey || e.metaKey) && e.key === 'v'
                 const isCutting = (e.ctrlKey || e.metaKey) && e.key === 'x'
-                if (isPasting && stateRef.current.copiedData) {
-                    cm.replaceSelection(stateRef.current.copiedData)
+                if (isPasting) {
+                    const hasSelectedText = cm.getSelection()
+                    if (hasSelectedText) {
+                        navigator.clipboard
+                            .readText()
+                            .then(text => {
+                                cm.replaceSelection(text)
+                                console.log('Text pasted from clipboard')
+                            })
+                            .catch(err => console.error('Failed to paste text: ', err))
+                    } else {
+                        navigator.clipboard
+                            .readText()
+                            .then(text => {
+                                const cursor = cm.getCursor()
+                                cm.replaceRange(text, cursor)
+                                console.log('Text pasted from clipboard')
+                            })
+                            .catch(err => console.error('Failed to paste text: ', err))
+                    }
                     e.stopPropagation()
                     e.preventDefault()
                     return
@@ -125,6 +143,13 @@ const SheetsEditor = ({ themeName }) => {
                     const isForwarding = (e.ctrlKey || e.metaKey) && e.key === 'y'
                     if (isUndoing || isForwarding) {
                         e.stopPropagation()
+                    }
+                }
+                if (stateRef.current.url === NOTION_URL) {
+                    const isSpace = e.key === ' '
+                    if (isSpace) {
+                        const cursor = cm.getCursor()
+                        cm.replaceRange(' ', cursor)
                     }
                 }
             }

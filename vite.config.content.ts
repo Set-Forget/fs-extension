@@ -1,7 +1,7 @@
 // TypeScript allows us to safely import JSON with assertion
 import packageJson from './package.json' assert { type: 'json' }
 
-import { defineConfig, Plugin, ResolvedConfig, BuildOptions } from 'vite'
+import { defineConfig, BuildOptions } from 'vite'
 import { isDev, r } from './scripts/utility'
 import react from '@vitejs/plugin-react'
 import path from 'path'
@@ -33,8 +33,9 @@ const config = defineConfig({
 
         lib: {
             entry: r('src/scripts/content/index.tsx'),
-            name: name,
-            formats: ['iife'] // Bundle everything together so chrome.runtime is available in our React app/components.
+            name,
+            // Bundle everything together so chrome.runtime is available in our React app/components.
+            formats: ['iife'] 
         },
 
         rollupOptions: {
