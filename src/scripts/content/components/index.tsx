@@ -35,6 +35,7 @@ const RootComponent = () => {
             const keyCombos = {
                 Enter: e.key === 'Enter',
                 Space: e.key === ' ',
+                Tab: e.key === 'Tab',
                 Backspace: e.key === 'Backspace',
                 ArrowUp: e.key === 'ArrowUp',
                 ArrowDown: e.key === 'ArrowDown',
